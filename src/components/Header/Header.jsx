@@ -1,11 +1,13 @@
 import React from 'react'
+import { Link } from 'react-router-dom';
+import './Header.css';
 
 export const Header = () => {
   return (
     <header className="main-header">
         <div className="header left">
             <Link to="/" className="logo-link">
-                <img src="/logo.png" alt="Logo" className="logo"/>
+                <img src="../logo.png" alt="Logo" className="logo"/>
                 <span className="slogan">Tu cancha, nuestra pasión!</span>
             </Link>
         </div>
