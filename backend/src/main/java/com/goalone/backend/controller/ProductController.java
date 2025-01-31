@@ -1,9 +1,9 @@
-package com.goalone.backend.controller;  
-
+package com.goalone.backend.controller;
 
 import com.goalone.backend.model.Product;
 import com.goalone.backend.model.ProductDTO;
 import com.goalone.backend.service.ProductService;
+import com.goalone.backend.repository.ProductRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +16,12 @@ import java.util.List;
 public class ProductController {  
 
     private final ProductService productService;
+    private final ProductRepository productRepository;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, ProductRepository productRepository)
+    {
         this.productService = productService;
+        this.productRepository = productRepository;
     }
 
     @GetMapping
@@ -42,5 +45,19 @@ public class ProductController {
             return ResponseEntity.internalServerError()
                 .body(Collections.singletonMap("error", e.getMessage()));
         }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        System.out.println("Buscando producto con ID: " + id);
+        return productRepository.findById(id)
+                .map(product -> {
+                    System.out.println("Producto encontrado: " + product);
+                    return ResponseEntity.ok(product);
+                })
+                .orElseGet(() -> {
+                    System.out.println("Producto no encontrado.");
+                    return ResponseEntity.notFound().build();
+                });
     }
 }
