@@ -6,6 +6,7 @@ import AdminPanel from './pages/Admin/AdminPanel';
 import AddProduct from './pages/Admin/AddProduct';
 import ProductDetail from './components/Main/ProductDetail';
 import ProductGalleryPage from './pages/ProductGalleryPage/ProductGalleryPage';
+import Footer from './components/Footer/Footer';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/product/:id/gallery" element={<ProductGalleryPage />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }
