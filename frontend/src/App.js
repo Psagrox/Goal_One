@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage/HomePage';
 import AdminPanel from './pages/Admin/AdminPanel';
 import AddProduct from './pages/Admin/AddProduct';
 import ProductDetail from './components/Main/ProductDetail';
+import ProductGalleryPage from './pages/ProductGalleryPage/ProductGalleryPage';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/admin/add-product" element={<AddProduct />} />
         <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/product/:id/gallery" element={<ProductGalleryPage />} />
       </Routes>
     </BrowserRouter>
   );
