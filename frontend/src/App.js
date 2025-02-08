@@ -7,6 +7,7 @@ import AddProduct from './pages/Admin/AddProduct';
 import ProductDetail from './components/Main/ProductDetail';
 import ProductGalleryPage from './pages/ProductGalleryPage/ProductGalleryPage';
 import Footer from './components/Footer/Footer';
+import ProductList from './pages/Admin/ProductList';
 
 function App() {
   return (
@@ -14,8 +15,10 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/administracion" element={<AdminPanel />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/admin/add-product" element={<AddProduct />} />
+        <Route path="/admin/product-list" element={<ProductList />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/product/:id/gallery" element={<ProductGalleryPage />} />
       </Routes>

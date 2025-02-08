@@ -1,0 +1,67 @@
+body{
+    margin-top: 3rem;
+}
+
+.mobile-message {
+    text-align: center;
+    padding: 2rem;
+    font-family: Arial, sans-serif;
+    color: #333;
+  }
+  
+  .mobile-message h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .mobile-message p {
+    font-size: 1.2rem;
+  }
+  
+  /* Estilos para el panel de administración */
+  .admin-panel {
+    padding: 2rem;
+    font-family: Arial, sans-serif;
+    color: #333;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .admin-panel h1 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  .admin-menu ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Dos columnas */
+    gap: 1rem;
+  }
+  
+  .admin-menu li {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .admin-menu li:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .admin-menu a {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  
+  .admin-menu a:hover {
+    text-decoration: underline;
+  }

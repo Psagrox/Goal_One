@@ -6,8 +6,8 @@ import RecommendationsSection from './RecommendationsSection';
 import ProductsGrid from './ProductsGrid';
 
 export const Main = () => {
-
   const [products, setProducts] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -22,14 +22,19 @@ export const Main = () => {
     fetchProducts();
   }, []);
 
+  // Filtrar productos por categoría seleccionada
+  const filteredProducts = selectedCategory
+    ? products.filter((product) => product.type === selectedCategory)
+    : products;
+
   return (
     <main className="main-container">
       <SearchSection />
-      <CategoriesSection />
+      <CategoriesSection onSelectCategory={setSelectedCategory} />
       <RecommendationsSection />
       <section className="home-products-section">
         <h2>Canchas Destacadas</h2>
-        <ProductsGrid products={products} />
+        <ProductsGrid products={filteredProducts} totalProducts={products.length}/>
       </section>
     </main>
   );

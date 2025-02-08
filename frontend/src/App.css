@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ocupa toda la altura de la ventana */
+}
+
+/* Estilos para el contenido principal */
+.main-content {
+  flex: 1; /* Hace que el contenido ocupe el espacio restante */
+  padding: 2rem 0; /* Ajusta el padding según sea necesario */
+}
