@@ -9,6 +9,7 @@ import ProductGalleryPage from './pages/ProductGalleryPage/ProductGalleryPage';
 import Footer from './components/Footer/Footer';
 import ProductList from './pages/Admin/ProductList';
 import EditProduct from './pages/Admin/EditProduct';
+import Register from './pages/User/Register';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/admin/edit-product/:id" element={<EditProduct />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/product/:id/gallery" element={<ProductGalleryPage />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
       <Footer />
     </BrowserRouter>
