@@ -50,6 +50,33 @@
     color: white;
 }
 
+#link{
+  padding: 0.5rem 1.5rem;
+  border: 2px solid #97C8EB;
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #abd4f1;
+  margin-right: 2rem;
+}
+
+.user-info .auth-button{
+  margin-left: 2rem;
+}
+
+.header-right{
+  margin-right: 2rem;
+}
+
+
 @media (max-width: 768px) {
     .main-header {
       padding: 0 1rem;

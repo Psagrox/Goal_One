@@ -10,11 +10,17 @@ import Footer from './components/Footer/Footer';
 import ProductList from './pages/Admin/ProductList';
 import EditProduct from './pages/Admin/EditProduct';
 import Register from './pages/User/Register';
+import Login from './pages/User/Login';
+import Profile from './pages/User/Profile';
+import ProtectedRoute from './components/Router/ProtectedRoute.js';
+import React, { useState } from 'react';
 
 function App() {
+  const [user, setUser] = useState(null);
+
   return (
     <BrowserRouter>
-      <Header />
+      <Header user={user} setUser={setUser} />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/administracion" element={<AdminPanel />} />
@@ -25,6 +31,18 @@ function App() {
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/product/:id/gallery" element={<ProductGalleryPage />} />
         <Route path="/register" element={<Register />} />
+        <Route
+          path="/login"
+          element={<Login setUser={setUser} />}
+        />
+        <Route
+          path="/perfil"
+          element={
+            <ProtectedRoute user={user}>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       <Footer />
     </BrowserRouter>

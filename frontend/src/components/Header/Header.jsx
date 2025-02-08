@@ -1,10 +1,16 @@
-import React from 'react'
+import React from 'react';
 import { Link } from 'react-router-dom';
 import './Header.css';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+import UserAvatar from '../UserAvatar/UserAvatar.jsx';
 
-export const Header = () => {
+export const Header = ({ user, setUser }) => { 
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    setUser(null);  
+    navigate('/');  
+  };
 
   return (
     <header className="main-header">
@@ -15,11 +21,19 @@ export const Header = () => {
         </Link>
       </div>
 
-      <div className="header-right">
-        <button className="auth-button" onClick={() => navigate("/register")}>Crear cuenta</button>
-        <button className="auth-button">Iniciar sesión</button>
-      </div>
-  </header>
+      {user ? (
+        <div className="user-info">
+          <UserAvatar name={user.name} />
+          <span>{user.name}</span>
+          <button className="auth-button"  onClick={handleLogout}>Cerrar Sesión</button>
+        </div>
+      ) : (
+         <div className="header-right">
+          <button className="auth-button" onClick={() => navigate("/register")}>Crear cuenta</button>
+          <Link className="auth-button" to="/login">Iniciar Sesión</Link>
+        </div>
+      )}
+    </header>
   );
 };
 

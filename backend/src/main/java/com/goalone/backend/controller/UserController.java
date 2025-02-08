@@ -1,5 +1,6 @@
 package com.goalone.backend.controller;
 
+import com.goalone.backend.model.LoginRequest;
 import com.goalone.backend.model.User;
 import com.goalone.backend.model.UserDTO;
 import com.goalone.backend.service.UserService;
@@ -32,6 +33,16 @@ public class UserController {
 
         // Devolvemos una respuesta con el usuario creado y un código 201 (CREATED)
         return new ResponseEntity<>(user, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
+        try {
+            User user = userService.loginUser(loginRequest.getEmail(), loginRequest.getPassword());
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
     }
 
 }
