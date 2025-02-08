@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import './Admin.css'; 
 
-const AddProduct = () => {
+const EditProduct = () => {
+  const { id } = useParams(); 
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     type: 'Fútbol 11',
@@ -10,35 +12,60 @@ const AddProduct = () => {
     rating: '',
     images: []
   });
-  
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+
+  // Cargar los datos del producto existente
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/products/${id}`);
+        if (!response.ok) {
+          throw new Error('Producto no encontrado');
+        }
+        const data = await response.json();
+
+        const cleanedPrice = data.price.replace(/[$/h]/g, ''); 
+
+        setFormData({
+          name: data.name,
+          type: data.type,
+          price: cleanedPrice,
+          rating: data.rating.toString(),
+          images: data.images
+        });
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    try {
-        const payload = {
-            name: formData.name,
-            type: formData.type,
-            price: parseFloat(formData.price),  
-            rating: parseFloat(formData.rating), 
-            images: formData.images
-        };
 
-        const response = await fetch('http://localhost:8080/api/products', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(payload)
-        });
+    try {
+      const payload = {
+        name: formData.name,
+        type: formData.type,
+        price: parseFloat(formData.price),
+        rating: parseFloat(formData.rating),
+        images: formData.images
+      };
+
+      const response = await fetch(`http://localhost:8080/api/products/${id}`, {
+        method: 'PUT', 
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
 
       const data = await response.json();
-      
+
       if (!response.ok) {
-        throw new Error(data.error || 'Error al guardar');
+        throw new Error(data.error || 'Error al actualizar el producto');
       }
-      
-      navigate('/admin');
+
+      navigate('/admin/product-list'); 
     } catch (err) {
       setError(err.message);
     }
@@ -53,7 +80,7 @@ const AddProduct = () => {
 
       const response = await fetch("http://localhost:8080/api/upload", {
         method: "POST",
-        body: formData, 
+        body: formData,
       });
 
       if (!response.ok) {
@@ -61,25 +88,23 @@ const AddProduct = () => {
         throw new Error(errorData.error || "Error al subir imágenes");
       }
 
-      return await response.json(); 
-      
+      return await response.json();
     } catch (error) {
       console.error("Error subiendo imágenes:", error);
-      throw error; 
+      throw error;
     }
   };
 
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
-    
+
     try {
       const uploadedUrls = await subirImagenes(files);
-      
+
       setFormData(prev => ({
         ...prev,
-        images: [...prev.images, ...uploadedUrls] 
+        images: [...prev.images, ...uploadedUrls]
       }));
-      
     } catch (error) {
       setError("Error al subir imágenes: " + error.message);
     }
@@ -87,7 +112,7 @@ const AddProduct = () => {
 
   return (
     <div className="add-product-form">
-      <h2>Registrar Nueva Cancha</h2>
+      <h2>Editar Cancha</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Nombre:</label>
@@ -161,10 +186,10 @@ const AddProduct = () => {
         </div>
 
         {error && <p className="error">{error}</p>}
-        <button type="submit">Guardar Cancha</button>
+        <button type="submit">Guardar Cambios</button>
       </form>
     </div>
   );
 };
 
-export default AddProduct;
+export default EditProduct;

@@ -29,9 +29,6 @@ const AdminPanel = () => {
           <li>
             <a href="/admin/product-list">Lista de Productos</a> 
           </li>
-          <li>
-            <a href="/admin/edit-products">Editar Productos</a>
-          </li>
         </ul>
       </nav>
     </div>

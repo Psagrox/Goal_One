@@ -4,8 +4,8 @@ const categories = [
   'Fútbol 11',
   'Fútbol 7',
   'Fútbol 5',
-  'Canchas Sintéticas',
-  'Canchas de Cesped Natural',
+  'Sintética',
+  'Césped Natural',
 ];
 
 const CategoriesSection = ({ onSelectCategory }) => {

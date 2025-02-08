@@ -6,6 +6,7 @@ import com.goalone.backend.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,8 +36,32 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    @Transactional
+    public void deleteProduct(Long id) {
+        if (!productRepository.existsById(id)) {
+            throw new RuntimeException("Producto no encontrado");
+        }
+
+        productRepository.deleteById(id);
+    }
+
     public List<Product> getAllProducts() {
         return productRepository.findAll();
+    }
+
+    @Transactional
+    public Product updateProduct(Long id, ProductDTO productDTO) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+
+        product.setName(productDTO.getName());
+        product.setType(productDTO.getType());
+        product.setPrice(String.format("$%,.0f/h", productDTO.getPrice()));
+        product.setRating(productDTO.getRating());
+        product.setImages(productDTO.getImages());
+
+        return productRepository.save(product);
     }
 }
 

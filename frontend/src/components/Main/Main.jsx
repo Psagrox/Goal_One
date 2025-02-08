@@ -8,6 +8,14 @@ import ProductsGrid from './ProductsGrid';
 export const Main = () => {
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+
+  useEffect(() => {
+    setCurrentPage(1); 
+  }, [selectedCategory]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -17,6 +25,9 @@ export const Main = () => {
         setProducts(data);
       } catch (error) {
         console.error('Error fetching products:', error);
+        setError('Error al cargar los productos');
+      } finally {
+        setLoading(false);
       }
     };
     fetchProducts();
@@ -27,17 +38,25 @@ export const Main = () => {
     ? products.filter((product) => product.type === selectedCategory)
     : products;
 
-  return (
-    <main className="main-container">
-      <SearchSection />
-      <CategoriesSection onSelectCategory={setSelectedCategory} />
-      <RecommendationsSection />
-      <section className="home-products-section">
-        <h2>Canchas Destacadas</h2>
-        <ProductsGrid products={filteredProducts} totalProducts={products.length}/>
-      </section>
-    </main>
-  );
+    if (loading) return <div>Cargando...</div>;
+    if (error) return <div>{error}</div>;
+    
+    return (
+      <main className="main-container">
+        <SearchSection />
+        <CategoriesSection onSelectCategory={setSelectedCategory} />
+        <RecommendationsSection />
+        <section className="home-products-section">
+          <h2>Canchas Destacadas</h2>
+          <ProductsGrid 
+            products={filteredProducts} 
+            totalProducts={products.length}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
+        </section>
+      </main>
+    );
 };
 
 export default Main;
