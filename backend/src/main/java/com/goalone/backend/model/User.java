@@ -13,6 +13,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
     @Column(unique = true, nullable = false)
     private String email;
 
@@ -22,4 +26,7 @@ public class User {
     @Column(nullable = false)
     private String name;
 
+    public String getUsername() {
+        return name;
+    }
 }

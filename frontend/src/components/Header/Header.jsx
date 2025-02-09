@@ -23,7 +23,7 @@ export const Header = ({ user, setUser }) => {
 
       {user ? (
         <div className="user-info">
-          <UserAvatar name={user.name} />
+          <UserAvatar name={user?.name || "Usuario"} />
           <span>{user.name}</span>
           <button className="auth-button"  onClick={handleLogout}>Cerrar Sesión</button>
         </div>

@@ -66,17 +66,24 @@ const Register = () => {
         throw new Error("Error al registrar usuario");
       }
   
+      // Supongamos que el backend devuelve el JWT en la respuesta
+      const data = await response.json();
+  
+      // Guardar el JWT en el almacenamiento local
+      localStorage.setItem("jwt", data.token);  // Asumiendo que el JWT viene como 'token'
+  
       // Mostrar mensaje de éxito
       setSuccessMessage("Usuario creado correctamente. Redirigiendo...");
   
       // Redirigir al inicio después de 2 segundos
       setTimeout(() => {
-        navigate("/");
+        navigate("/");  // Redirige al home o cualquier ruta que elijas
       }, 1000);
     } catch (err) {
       setServerError("Hubo un problema con el registro. Intenta de nuevo.");
     }
   };
+  
 
   return (
     <div className="register-container">

@@ -1,16 +1,18 @@
 package com.goalone.backend.controller;
 
+import com.goalone.backend.config.JwtTokenProvider;
 import com.goalone.backend.model.LoginRequest;
 import com.goalone.backend.model.User;
 import com.goalone.backend.model.UserDTO;
 import com.goalone.backend.service.UserService;
-import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
+
+import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -22,27 +24,50 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
     public UserController() {
         logger.info("UserController cargado correctamente");
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@Valid @RequestBody UserDTO userDTO) {
-        // Llamamos al servicio para registrar el usuario
-        User user = userService.registerUser(userDTO);
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();  // Este es un ejemplo, deberías implementar este servicio
+        return ResponseEntity.ok(users);
+    }
 
-        // Devolvemos una respuesta con el usuario creado y un código 201 (CREATED)
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody UserDTO userDto) {
+        // Lógica para guardar el usuario en la base de datos
+        User newUser = userService.registerUser(userDto);
+
+        // Obtener el rol del usuario
+        String userRole = newUser.getRole().name();
+
+        // Imprimir el rol en la consola
+        System.out.println("Usuario registrado con rol: " + userRole);
+
+        // Crear el token JWT
+        String token = jwtTokenProvider.generateToken(
+                newUser.getEmail(),
+                newUser.getName(),
+                newUser.getRole().name()
+        );
+
+        // Retornar el token en la respuesta
+        return ResponseEntity.ok(new JwtTokenProvider.JwtResponse(token));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
         try {
-            User user = userService.loginUser(loginRequest.getEmail(), loginRequest.getPassword());
-            return ResponseEntity.ok(user);
+            String token = userService.loginUser(loginRequest.getEmail(), loginRequest.getPassword());
+            return ResponseEntity.ok(new JwtTokenProvider.JwtResponse(token));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 
 }
+

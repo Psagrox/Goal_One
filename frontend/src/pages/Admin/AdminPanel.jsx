@@ -1,5 +1,6 @@
 import React from 'react';
 import './AdminPanel.css'; 
+import ManageUsers from './ManageUsers';
 
 const AdminPanel = () => {
   // Función para detectar si el usuario está en un dispositivo móvil
@@ -28,6 +29,9 @@ const AdminPanel = () => {
           </li>
           <li>
             <a href="/admin/product-list">Lista de Productos</a> 
+          </li>
+          <li>
+           <ManageUsers />
           </li>
         </ul>
       </nav>

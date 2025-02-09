@@ -1,2 +1,7 @@
-package com.goalone.backend.model;public class Role {
+package com.goalone.backend.model;
+
+
+public enum Role {
+    ADMIN,
+    USER
 }
