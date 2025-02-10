@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
+  const token = localStorage.getItem('token');
 
   // Obtener la lista de productos desde la API
   useEffect(() => {
@@ -30,6 +31,10 @@ const ProductList = () => {
       // Hacer una solicitud DELETE al backend
       const response = await fetch(`http://localhost:8080/api/products/${productId}`, {
         method: 'DELETE',
+        headers: 
+        {
+          'Authorization': `Bearer ${token}`
+        },
       });
 
       if (response.ok) {

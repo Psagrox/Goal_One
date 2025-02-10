@@ -80,8 +80,8 @@
   
   .category-card {
     padding: 1.5rem;
-    background: white;
-    border: 2px solid #e0e0e0;
+    background: #3AAFB9;
+    border: 2px solid #97C8EB;
     border-radius: 15px;
     cursor: pointer;
     transition: all 0.3s;

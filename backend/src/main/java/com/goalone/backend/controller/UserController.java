@@ -33,7 +33,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();  // Este es un ejemplo, deberías implementar este servicio
+        List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
@@ -52,7 +52,7 @@ public class UserController {
         String token = jwtTokenProvider.generateToken(
                 newUser.getEmail(),
                 newUser.getName(),
-                newUser.getRole().name()
+                userRole // Aquí se pasa el rol sin prefijo "ROLE_"
         );
 
         // Retornar el token en la respuesta
@@ -68,6 +68,4 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
-
 }
-

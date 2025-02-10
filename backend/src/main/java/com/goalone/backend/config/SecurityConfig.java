@@ -2,6 +2,7 @@ package com.goalone.backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -14,6 +15,10 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,9 +36,11 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable) // Deshabilitar CSRF (común en APIs REST)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/users/login", "/api/users/register").permitAll() // Permitir acceso público a estos endpoints
                         .requestMatchers("/api/products").permitAll() // Permitir acceso público a /api/products
-                        .requestMatchers("/api/users/**", "/admin/**").hasRole("ADMIN") // Proteger endpoints de admin
+                        .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/api/users/**", "/admin/**").hasAuthority("ROLE_ADMIN")// Proteger endpoints de admin
                         .anyRequest().authenticated() // Cualquier otra solicitud requiere autenticación
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // Añadir el filtro JWT
@@ -61,5 +68,16 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(); // Usar BCrypt para encriptar contraseñas
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("*");  // Permitir todas las conexiones
+        config.addAllowedMethod("*");  // Permitir todos los métodos (GET, POST, PUT, DELETE, etc.)
+        config.addAllowedHeader("*");  // Permitir todos los headers
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
 }

@@ -13,6 +13,7 @@ const AddProduct = () => {
   
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const token = localStorage.getItem('token');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +29,10 @@ const AddProduct = () => {
 
         const response = await fetch('http://localhost:8080/api/products', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
             body: JSON.stringify(payload)
         });
 
@@ -53,7 +57,10 @@ const AddProduct = () => {
 
       const response = await fetch("http://localhost:8080/api/upload", {
         method: "POST",
-        body: formData, 
+        body: formData,
+        headers: {
+          'Authorization': `Bearer ${token}`
+        } 
       });
 
       if (!response.ok) {

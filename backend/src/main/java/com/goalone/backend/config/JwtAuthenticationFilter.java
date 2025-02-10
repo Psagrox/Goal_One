@@ -19,34 +19,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String path = request.getRequestURI();
+        try {
+            String token = getJwtFromRequest(request);
+            System.out.println("Token recibido: " + token);
 
-        // Ignorar el filtro para /api/products
-        if (path.startsWith("/api/products")) {
+            if (token != null && jwtTokenProvider.validateToken(token)) {
+                String username = jwtTokenProvider.getUsernameFromToken(token);
+                System.out.println("Usuario autenticado: " + username);
+
+                var authorities = jwtTokenProvider.getAuthoritiesFromToken(token);
+                System.out.println("Roles del usuario: " + authorities);
+
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(username, null, authorities);
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                System.out.println("Token no válido o no proporcionado");
+            }
+
             filterChain.doFilter(request, response);
-            return;
+
+        } catch (Exception e) {
+            System.out.println("Error en la autenticación: " + e.getMessage());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token no válido o no proporcionado");
         }
-
-        // Extraemos el token JWT del encabezado Authorization
-        String token = getJwtFromRequest(request);
-
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            // Si el token es válido, obtenemos el nombre de usuario y configuramos la autenticación
-            String username = jwtTokenProvider.getUsernameFromToken(token);
-
-            // Configuramos la autenticación en el contexto de seguridad
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    username, null, jwtTokenProvider.getAuthoritiesFromToken(token)
-            );
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
-
-        // Continuamos con el flujo de la cadena de filtros
-        filterChain.doFilter(request, response);
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {

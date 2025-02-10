@@ -6,7 +6,7 @@ const SearchSection = () => {
       <div className="search-container">
         <input 
           type="text" 
-          placeholder="Buscar canchas por ubicación o nombre..."
+          placeholder="Buscar canchas por nombre..."
           className="search-input"
         />
         <button className="search-button">

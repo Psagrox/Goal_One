@@ -1,6 +1,6 @@
 import React from 'react';
 import './AdminPanel.css'; 
-import ManageUsers from './ManageUsers';
+import { Link } from 'react-router-dom';
 
 const AdminPanel = () => {
   // Función para detectar si el usuario está en un dispositivo móvil
@@ -31,7 +31,7 @@ const AdminPanel = () => {
             <a href="/admin/product-list">Lista de Productos</a> 
           </li>
           <li>
-           <ManageUsers />
+            <Link to="/admin/manage-users">Gestionar Usuarios</Link> {/* Enlace a ManageUsers */}
           </li>
         </ul>
       </nav>

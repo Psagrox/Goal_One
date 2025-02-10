@@ -13,12 +13,20 @@ const EditProduct = () => {
     images: []
   });
   const [error, setError] = useState('');
+  const token = localStorage.getItem('token');
 
   // Cargar los datos del producto existente
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/products/${id}`);
+        const response = await fetch(`http://localhost:8080/api/products/${id}`, {
+          method: 'GET',
+          headers: {
+              'Authorization': `Bearer ${token}`  
+          },
+        }
+
+        );
         if (!response.ok) {
           throw new Error('Producto no encontrado');
         }
@@ -38,8 +46,10 @@ const EditProduct = () => {
       }
     };
 
-    fetchProduct();
-  }, [id]);
+    if (token) {
+      fetchProduct();
+    }
+  }, [token, id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,7 +65,10 @@ const EditProduct = () => {
 
       const response = await fetch(`http://localhost:8080/api/products/${id}`, {
         method: 'PUT', 
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
         body: JSON.stringify(payload)
       });
 
@@ -80,6 +93,9 @@ const EditProduct = () => {
 
       const response = await fetch("http://localhost:8080/api/upload", {
         method: "POST",
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData,
       });
 

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider {
@@ -24,7 +23,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(email) // Email del usuario
                 .claim("name", name)  // Agregar el nombre
-                .claim("role", role)  // Agregar el rol
+                .claim("role", role)  // Agregar el rol sin el prefijo ROLE_
                 .setIssuedAt(new Date()) // Fecha de emisión
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION)) // Fecha de expiración
                 .signWith(SignatureAlgorithm.HS512, JWT_SECRET) // Firmar el token
@@ -59,10 +58,13 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-        List<String> roles = claims.get("roles", List.class);
-        return roles.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        String role = claims.get("role", String.class);
+        // Asegúrate de que el rol no tenga el prefijo "ROLE_" duplicado
+        if (role.startsWith("ROLE_")) {
+            return List.of(new SimpleGrantedAuthority(role));
+        } else {
+            return List.of(new SimpleGrantedAuthority("ROLE_" + role));
+        }
     }
 
     @Getter
@@ -76,6 +78,5 @@ public class JwtTokenProvider {
         public String getToken() {
             return token;
         }
-
     }
 }

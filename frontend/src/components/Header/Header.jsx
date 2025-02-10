@@ -25,7 +25,12 @@ export const Header = ({ user, setUser }) => {
         <div className="user-info">
           <UserAvatar name={user?.name || "Usuario"} />
           <span>{user.name}</span>
-          <button className="auth-button"  onClick={handleLogout}>Cerrar Sesión</button>
+
+          {user.role === 'ADMIN' && (
+            <Link to="/admin" className="auth-button">Administrar</Link>
+          )}
+
+          <button className="auth-button" onClick={handleLogout}>Cerrar Sesión</button>
         </div>
       ) : (
          <div className="header-right">

@@ -75,13 +75,13 @@
   padding: 0.5rem 1rem;
   border: 1px solid #ddd;
   border-radius: 4px;
-  background-color: #f9f9f9;
+  background-color: #3AAFB9;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 .pagination-controls button:hover {
-  background-color: #eee;
+  background-color: #64E9EE;
 }
 
 .pagination-controls button:disabled {
@@ -90,9 +90,9 @@
 }
 
 .pagination-controls button.active {
-  background-color: #007bff;
+  background-color: #3AAFB9;
   color: white;
-  border-color: #007bff;
+  border-color: #97C8EB;
 }
 
 /* Responsive */

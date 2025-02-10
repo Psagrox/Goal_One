@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/products")
 //@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class ProductController {
 
     @PostConstruct

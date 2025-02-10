@@ -15,20 +15,18 @@ import Register from './pages/User/Register';
 import Login from './pages/User/Login';
 import Profile from './pages/User/Profile';
 import ProtectedRoute from './components/Router/ProtectedRoute';
+import ManageUsers from './pages/Admin/ManageUsers';
 
 function App() {
   const [user, setUser] = useState(undefined);
 
   useEffect(() => {
-    console.log("Ejecutando useEffect para obtener el token...");
 
     const storedToken = localStorage.getItem("token");
-    console.log("Token en localStorage:", storedToken);
 
     if (storedToken) {
       try {
         const decoded = jwtDecode(storedToken);
-         console.log("Token decodificado:", decoded);
 
         setUser({
           token: storedToken,
@@ -50,7 +48,6 @@ function App() {
     return <div>Cargando...</div>; // Puedes reemplazarlo con un spinner
   }
 
-  console.log("Usuario autenticado:", user, );
   return (
     <BrowserRouter>
       <Header user={user} setUser={setUser} />
@@ -88,6 +85,7 @@ function App() {
             <EditProduct />
           </ProtectedRoute>
         }/>
+        <Route path="/admin/manage-users" element={<ManageUsers />} />
 
       </Routes>
       <Footer />

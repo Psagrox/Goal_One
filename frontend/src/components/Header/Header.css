@@ -37,17 +37,21 @@
 }
 
 .auth-button {
-    padding: 0.5rem 1.5rem;
-    border: 2px solid #97C8EB;
-    background: transparent;
-    color: #abd4f1;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  padding: 0.5rem 1.5rem;
+  border: 2px solid #97C8EB;
+  border-radius: 1.5rem;
+  background: transparent;
+  color: #abd4f1;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none; /* Para que los links tengan el mismo estilo */
+  display: inline-block; /* Asegura que los links se comporten como botones */
+  text-align: center;
 }
 
 .auth-button:hover {
-    background-color: #6697ca;
-    color: white;
+  background-color: #6697ca;
+  color: white;
 }
 
 #link{
@@ -75,6 +79,8 @@
 .header-right{
   margin-right: 2rem;
 }
+
+
 
 
 @media (max-width: 768px) {
