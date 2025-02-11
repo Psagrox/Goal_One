@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import './Admin.css'; 
+import './Admin.css';
 
 const EditProduct = () => {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     type: 'Fútbol 11',
     price: '',
     rating: '',
-    images: []
+    images: [],
+    description: '',
+    features: [],
   });
   const [error, setError] = useState('');
   const token = localStorage.getItem('token');
+  const [features, setFeatures] = useState([]);
+  const [selectedFeatures, setSelectedFeatures] = useState([]);
+
 
   // Cargar los datos del producto existente
   useEffect(() => {
@@ -22,7 +27,7 @@ const EditProduct = () => {
         const response = await fetch(`http://localhost:8080/api/products/${id}`, {
           method: 'GET',
           headers: {
-              'Authorization': `Bearer ${token}`  
+            'Authorization': `Bearer ${token}`
           },
         }
 
@@ -32,14 +37,15 @@ const EditProduct = () => {
         }
         const data = await response.json();
 
-        const cleanedPrice = data.price.replace(/[$/h]/g, ''); 
+        const cleanedPrice = data.price.replace(/[$/h]/g, '');
 
         setFormData({
           name: data.name,
           type: data.type,
           price: cleanedPrice,
           rating: data.rating.toString(),
-          images: data.images
+          images: data.images,
+          description: data.description,
         });
       } catch (err) {
         setError(err.message);
@@ -51,6 +57,16 @@ const EditProduct = () => {
     }
   }, [token, id]);
 
+  // Obtener características disponibles
+  useEffect(() => {
+    const fetchFeatures = async () => {
+      const response = await fetch('http://localhost:8080/api/features');
+      const data = await response.json();
+      setFeatures(data);
+    };
+    fetchFeatures();
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -60,14 +76,16 @@ const EditProduct = () => {
         type: formData.type,
         price: parseFloat(formData.price),
         rating: parseFloat(formData.rating),
-        images: formData.images
+        images: formData.images,
+        description: formData.description,
+        features: formData.selectedFeatures,
       };
 
       const response = await fetch(`http://localhost:8080/api/products/${id}`, {
-        method: 'PUT', 
-        headers: { 
+        method: 'PUT',
+        headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` 
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(payload)
       });
@@ -78,7 +96,7 @@ const EditProduct = () => {
         throw new Error(data.error || 'Error al actualizar el producto');
       }
 
-      navigate('/admin/product-list'); 
+      navigate('/admin/product-list');
     } catch (err) {
       setError(err.message);
     }
@@ -199,6 +217,29 @@ const EditProduct = () => {
               <img key={index} src={img} alt={`Preview ${index}`} />
             ))}
           </div>
+        </div>
+
+        <div className="form-group">
+          <label>Descripción:</label>
+          <textarea
+            value={formData.description}
+            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+            required
+          />
+        </div>
+
+        {/* Nuevo campo: Características */}
+        <div className="form-group">
+          <label>Características:</label>
+          <select
+            multiple
+            value={selectedFeatures}
+            onChange={(e) => setSelectedFeatures(Array.from(e.target.selectedOptions, (option) => option.value))}
+          >
+            {features.map((feature) => (
+              <option key={feature.id} value={feature.id}>{feature.name}</option>
+            ))}
+          </select>
         </div>
 
         {error && <p className="error">{error}</p>}

@@ -58,6 +58,7 @@ public class Product {
     private String type;
     private String price;
     private Double rating;
+    private String description;
 
     public List<String> getImages() {
         return images;
@@ -65,6 +66,22 @@ public class Product {
 
     @ElementCollection
     private List<String> images = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "product_features",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "feature_id")
+    )
+    private List<Feature> features = new ArrayList<>();
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
 
 

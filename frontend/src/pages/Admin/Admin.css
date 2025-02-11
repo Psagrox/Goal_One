@@ -30,6 +30,10 @@
     margin-bottom: 0.5rem;
   }
   
+  .form-group select {
+    width: 200px;
+  }
+  
   .form-group input,
   .form-group textarea {
     width: 100%;
@@ -102,3 +106,128 @@
     background: #007bff;
     color: white;
   }
+
+  .manage-features {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.manage-features h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.manage-features .add-feature-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.manage-features .add-feature-form input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.manage-features .add-feature-form button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.manage-features .add-feature-form button:hover {
+    background-color: #0056b3;
+}
+
+.manage-features .features-list {
+    list-style: none;
+    padding: 0;
+}
+
+.manage-features .features-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.manage-features .features-list li button {
+    padding: 5px 10px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.manage-features .features-list li button:hover {
+    background-color: #c82333;
+}
+
+.manage-feature-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.manage-feature-container input{
+  margin: 0 1rem;
+}
+
+.feature-list {
+  display: flex;
+  justify-content: center;
+}
+
+.feature-list img {
+  margin: 0 1rem;
+  height: 30px;
+}
+
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .manage-features {
+        padding: 15px;
+    }
+
+    .manage-features .add-feature-form {
+        flex-direction: column;
+    }
+
+    .manage-features .add-feature-form input {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .manage-features .add-feature-form button {
+        width: 100%;
+    }
+
+    .manage-features .features-list li {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .manage-features .features-list li button {
+        margin-top: 10px;
+        width: 100%;
+    }
+}

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
@@ -51,8 +52,7 @@ public class UserController {
         // Crear el token JWT
         String token = jwtTokenProvider.generateToken(
                 newUser.getEmail(),
-                newUser.getName(),
-                userRole // Aquí se pasa el rol sin prefijo "ROLE_"
+                List.of(new SimpleGrantedAuthority(userRole)) // Convertir el rol a una lista de autoridades
         );
 
         // Retornar el token en la respuesta

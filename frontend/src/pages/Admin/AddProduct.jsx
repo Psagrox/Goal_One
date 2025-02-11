@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Admin.css'; 
+import './Admin.css';
 
 const AddProduct = () => {
   const [formData, setFormData] = useState({
@@ -8,40 +8,61 @@ const AddProduct = () => {
     type: 'Fútbol 11',
     price: '',
     rating: '',
-    images: []
+    images: [],
+    description: '',
   });
-  
+
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
+  const [features, setFeatures] = useState([]);
+  const [selectedFeatures, setSelectedFeatures] = useState([]);
+
+
+  useEffect(() => {
+    const fetchFeatures = async () => {
+      const response = await fetch('http://localhost:8080/api/features', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      setFeatures(data);
+    };
+    fetchFeatures();
+  }, []);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    try {
-        const payload = {
-            name: formData.name,
-            type: formData.type,
-            price: parseFloat(formData.price),  
-            rating: parseFloat(formData.rating), 
-            images: formData.images
-        };
 
-        const response = await fetch('http://localhost:8080/api/products', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(payload)
-        });
+    try {
+      const payload = {
+        name: formData.name,
+        type: formData.type,
+        price: parseFloat(formData.price),
+        rating: parseFloat(formData.rating),
+        images: formData.images,
+        description: formData.description,
+        featureIds: selectedFeatures, 
+      };
+
+      const response = await fetch('http://localhost:8080/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
 
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.error || 'Error al guardar');
       }
-      
+
       navigate('/admin');
     } catch (err) {
       setError(err.message);
@@ -60,7 +81,7 @@ const AddProduct = () => {
         body: formData,
         headers: {
           'Authorization': `Bearer ${token}`
-        } 
+        }
       });
 
       if (!response.ok) {
@@ -68,25 +89,25 @@ const AddProduct = () => {
         throw new Error(errorData.error || "Error al subir imágenes");
       }
 
-      return await response.json(); 
-      
+      return await response.json();
+
     } catch (error) {
       console.error("Error subiendo imágenes:", error);
-      throw error; 
+      throw error;
     }
   };
 
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
-    
+
     try {
       const uploadedUrls = await subirImagenes(files);
-      
+
       setFormData(prev => ({
         ...prev,
-        images: [...prev.images, ...uploadedUrls] 
+        images: [...prev.images, ...uploadedUrls]
       }));
-      
+
     } catch (error) {
       setError("Error al subir imágenes: " + error.message);
     }
@@ -166,6 +187,30 @@ const AddProduct = () => {
             ))}
           </div>
         </div>
+
+        <div className="form-group">
+          <label>Descripcion:</label>
+          <input
+            type="text"
+            value={formData.description}
+            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Características:</label>
+          <select
+            multiple
+            value={selectedFeatures}
+            onChange={(e) => setSelectedFeatures(Array.from(e.target.selectedOptions, (option) => option.value))}
+          >
+            {features.map((feature) => (
+              <option key={feature.id} value={feature.id}>{feature.name}</option>
+            ))}
+          </select>
+        </div>
+
 
         {error && <p className="error">{error}</p>}
         <button type="submit">Guardar Cancha</button>

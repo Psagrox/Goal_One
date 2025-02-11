@@ -33,6 +33,12 @@ const AdminPanel = () => {
           <li>
             <Link to="/admin/manage-users">Gestionar Usuarios</Link> {/* Enlace a ManageUsers */}
           </li>
+          <li>
+            <Link to="/admin/manage-features">Administrar Características</Link> 
+          </li>
+          <li>
+            <Link to="/admin/manage-categories">Administrar Categorías</Link> {/* Nueva ruta para gestionar categorías */}
+          </li>
         </ul>
       </nav>
     </div>

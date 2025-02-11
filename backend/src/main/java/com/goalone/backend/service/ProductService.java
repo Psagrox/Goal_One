@@ -1,14 +1,13 @@
 package com.goalone.backend.service;
 
+import com.goalone.backend.model.Feature;
 import com.goalone.backend.model.Product;
 import com.goalone.backend.model.ProductDTO;
+import com.goalone.backend.repository.FeatureRepository;
 import com.goalone.backend.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -16,9 +15,12 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final FeatureRepository featureRepository;
 
-    public ProductService(ProductRepository productRepository) {
+    @Autowired
+    public ProductService(ProductRepository productRepository, FeatureRepository featureRepository) {
         this.productRepository = productRepository;
+        this.featureRepository = featureRepository;
     }
 
     public boolean productExists(String name) {
@@ -32,6 +34,11 @@ public class ProductService {
         product.setPrice(String.format("$%,.0f/h", productDTO.getPrice()));
         product.setRating(productDTO.getRating());
         product.setImages(productDTO.getImages());
+        product.setDescription(productDTO.getDescription());
+
+        // Obtener características por sus IDs
+        List<Feature> features = featureRepository.findAllById(productDTO.getFeatureIds());
+        product.setFeatures(features);
 
         return productRepository.save(product);
     }
@@ -54,14 +61,17 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-
         product.setName(productDTO.getName());
         product.setType(productDTO.getType());
         product.setPrice(String.format("$%,.0f/h", productDTO.getPrice()));
         product.setRating(productDTO.getRating());
         product.setImages(productDTO.getImages());
+        product.setDescription(productDTO.getDescription());
+
+        // Obtener características por sus IDs
+        List<Feature> features = featureRepository.findAllById(productDTO.getFeatureIds());
+        product.setFeatures(features);
 
         return productRepository.save(product);
     }
 }
-

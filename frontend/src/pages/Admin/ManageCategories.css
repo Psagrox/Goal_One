@@ -1,0 +1,31 @@
+.manage-categories {
+    padding: 20px;
+  }
+  
+  .category-actions input {
+    margin-bottom: 10px;
+  }
+  
+  .category-actions button {
+    margin-left: 10px;
+  }
+  
+  .categories-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .categories-list li {
+    justify-content: center;
+  }
+  
+  .category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .category-item button {
+    margin-left: 10px;
+  }

@@ -21,6 +21,9 @@ public class UserDTO {
     @NotEmpty(message = "El nombre no puede estar vacío")
     private String name;
 
+    @NotNull(message = "El rol no puede ser nulo")
+    private Role role; // Cambiar a Role enum
+
     // Getters y Setters
     public String getEmail() {
         return email;
@@ -28,6 +31,14 @@ public class UserDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public String getPassword() {

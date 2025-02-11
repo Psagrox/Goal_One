@@ -16,6 +16,8 @@ import Login from './pages/User/Login';
 import Profile from './pages/User/Profile';
 import ProtectedRoute from './components/Router/ProtectedRoute';
 import ManageUsers from './pages/Admin/ManageUsers';
+import ManageFeatures from './pages/Admin/ManageFeatures';
+import ManageCategories from './pages/Admin/ManageCategories';
 
 function App() {
   const [user, setUser] = useState(undefined);
@@ -31,8 +33,8 @@ function App() {
         setUser({
           token: storedToken,
           email: decoded.sub,
-          name: decoded.name,
-          role: decoded.role,
+          name: decoded.sub.split('@')[0],
+          roles: decoded.roles,
         });
       } catch (error) {
         console.error("Token inválido:", error);
@@ -63,29 +65,41 @@ function App() {
           <ProtectedRoute user={user}>
             <Profile />
           </ProtectedRoute>
-        }/>
+        } />
 
         <Route path="/admin" element={
           <ProtectedRoute user={user} requiredRole="ADMIN">
             <AdminPanel />
           </ProtectedRoute>
-        }/>
+        } />
         <Route path="/admin/add-product" element={
           <ProtectedRoute user={user} requiredRole="ADMIN">
             <AddProduct />
           </ProtectedRoute>
-        }/>
+        } />
         <Route path="/admin/product-list" element={
           <ProtectedRoute user={user} requiredRole="ADMIN">
             <ProductList />
           </ProtectedRoute>
-        }/>
+        } />
         <Route path="/admin/edit-product/:id" element={
           <ProtectedRoute user={user} requiredRole="ADMIN">
             <EditProduct />
           </ProtectedRoute>
-        }/>
+        } />
         <Route path="/admin/manage-users" element={<ManageUsers />} />
+        <Route path="/admin/manage-features" element={
+          <ProtectedRoute user={user} requiredRole="ADMIN">
+            <ManageFeatures />
+          </ProtectedRoute>
+        } />
+
+        {/* Ruta para gestionar categorías */}
+        <Route path="/admin/manage-categories" element={
+          <ProtectedRoute user={user} requiredRole="ADMIN">
+            <ManageCategories />
+          </ProtectedRoute>
+        } />
 
       </Routes>
       <Footer />

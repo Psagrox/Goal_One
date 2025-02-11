@@ -2,72 +2,31 @@ package com.goalone.backend.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider {
 
-    private static final Key JWT_SECRET = Keys.secretKeyFor(SignatureAlgorithm.HS512); // Genera una clave segura
-    private static final long JWT_EXPIRATION = 86400000L; // 1 día en milisegundos
+    private final SecretKey jwtSecret;
 
-    public String generateToken(String email, String name, String role) {
-        return Jwts.builder()
-                .setSubject(email) // Email del usuario
-                .claim("name", name)  // Agregar el nombre
-                .claim("role", role)  // Agregar el rol sin el prefijo ROLE_
-                .setIssuedAt(new Date()) // Fecha de emisión
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION)) // Fecha de expiración
-                .signWith(SignatureAlgorithm.HS512, JWT_SECRET) // Firmar el token
-                .compact();
+    // Constructor que acepta la clave secreta como parámetro
+    @Autowired
+    public JwtTokenProvider(String jwtSecret) {
+        // Convertir la cadena de texto en una clave secreta
+        this.jwtSecret = Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
-    public String getUsernameFromToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(JWT_SECRET)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
-    }
-
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parser()
-                    .setSigningKey(JWT_SECRET)
-                    .build()
-                    .parseClaimsJws(token);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public List<GrantedAuthority> getAuthoritiesFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(JWT_SECRET)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        String role = claims.get("role", String.class);
-        // Asegúrate de que el rol no tenga el prefijo "ROLE_" duplicado
-        if (role.startsWith("ROLE_")) {
-            return List.of(new SimpleGrantedAuthority(role));
-        } else {
-            return List.of(new SimpleGrantedAuthority("ROLE_" + role));
-        }
-    }
-
-    @Getter
+    // Clase interna para representar la respuesta del token JWT
     public static class JwtResponse {
         private final String token;
 
@@ -78,5 +37,51 @@ public class JwtTokenProvider {
         public String getToken() {
             return token;
         }
+    }
+
+    public String generateToken(String username, Collection<? extends GrantedAuthority> authorities) {
+        return Jwts.builder()
+                .subject(username)
+                .claim("roles", authorities.stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toList()))
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 864_000_000)) // 10 días
+                .signWith(jwtSecret) // Firmar con la clave secreta
+                .compact();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith(jwtSecret) // Verificar con la clave secreta
+                    .build()
+                    .parseSignedClaims(token); // Analizar el token firmado
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public String getUsernameFromToken(String token) {
+        return Jwts.parser()
+                .verifyWith(jwtSecret) // Verificar con la clave secreta
+                .build()
+                .parseSignedClaims(token) // Analizar el token firmado
+                .getPayload() // Obtener el payload
+                .getSubject(); // Obtener el nombre de usuario
+    }
+
+    public Collection<? extends GrantedAuthority> getAuthoritiesFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(jwtSecret) // Verificar con la clave secreta
+                .build()
+                .parseSignedClaims(token) // Analizar el token firmado
+                .getPayload(); // Obtener el payload
+
+        List<String> roles = claims.get("roles", List.class);
+        return roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 }

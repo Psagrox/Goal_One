@@ -6,7 +6,6 @@ import UserAvatar from '../UserAvatar/UserAvatar.jsx';
 
 export const Header = ({ user, setUser }) => { 
   const navigate = useNavigate();
-
   const handleLogout = () => {
     setUser(null);  
     navigate('/');  
@@ -24,9 +23,9 @@ export const Header = ({ user, setUser }) => {
       {user ? (
         <div className="user-info">
           <UserAvatar name={user?.name || "Usuario"} />
-          <span>{user.name}</span>
+          <span>{user?.name}</span>
 
-          {user.role === 'ADMIN' && (
+          {user.roles.includes('ADMIN') && (
             <Link to="/admin" className="auth-button">Administrar</Link>
           )}
 

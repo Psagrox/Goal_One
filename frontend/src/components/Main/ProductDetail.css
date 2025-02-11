@@ -104,3 +104,8 @@
   margin: 0.5rem 0;
   font-size: 1.1rem;
 }
+
+.features img{
+  width: 35px;
+  margin-right: 1rem;
+}

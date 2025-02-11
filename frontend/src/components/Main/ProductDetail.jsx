@@ -40,27 +40,27 @@ const ProductDetail = () => {
                 <div className="gallery-block">
                     {/* Imagen principal (mitad izquierda) */}
                     <div className="main-image">
-                    {product.images[0] && (
-                        <img src={product.images[0]} alt={`Imagen principal de ${product.name}`} />
-                    )}
+                        {product.images[0] && (
+                            <img src={product.images[0]} alt={`Imagen principal de ${product.name}`} />
+                        )}
                     </div>
 
                     {/* Grilla de 4 imágenes (mitad derecha) */}
                     <div className="grid-images">
-                    {product.images.slice(1, 5).map((image, index) => (
-                        <div key={index} className="grid-image">
-                        <img src={image} alt={`Imagen ${index + 1} de ${product.name}`} />
-                        </div>
-                    ))}
+                        {product.images.slice(1, 5).map((image, index) => (
+                            <div key={index} className="grid-image">
+                                <img src={image} alt={`Imagen ${index + 1} de ${product.name}`} />
+                            </div>
+                        ))}
                     </div>
 
-                    
+
                 </div>
 
                 {/* Botón "Ver más" */}
                 <div className="view-more">
                     <Link to={`/product/${product.id}/gallery`}>Ver más</Link>
-                    </div>
+                </div>
             </div>
 
             {/* Información del producto */}
@@ -68,6 +68,22 @@ const ProductDetail = () => {
                 <p><strong>Tipo:</strong> {product.type}</p>
                 <p><strong>Precio:</strong> {product.price}</p>
                 <p><strong>Calificación:</strong> ⭐ {product.rating}</p>
+
+                {/* Descripción */}
+                <p><strong>Descripción:</strong> {product.description}</p>
+
+                {/* Características */}
+                <div className="features">
+                    <strong>Características:</strong>
+                    <ul>
+                        {product.features.map((feature) => (
+                            <li key={feature.id}>
+                                <img src={feature.icon} alt={feature.name} />
+                                {feature.name}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             </div>
         </div>
     );

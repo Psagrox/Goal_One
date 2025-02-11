@@ -5,11 +5,14 @@ import com.goalone.backend.model.User;
 import com.goalone.backend.model.UserDTO;
 import com.goalone.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.goalone.backend.model.Role;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,10 +40,6 @@ public class UserService {
         // Asignamos "USER" como rol por defecto
         Role role = Role.USER;
 
-        // Eliminar, únicamente de prueba
-        if (userRepository.count() == 0) {
-            role = Role.ADMIN; // Este será el rol admin
-        }
 
         User user = new User();
         user.setEmail(userDTO.getEmail());
@@ -60,7 +59,13 @@ public class UserService {
             throw new InvalidPasswordException("Contraseña incorrecta");
         }
 
-        return jwtTokenProvider.generateToken(user.getEmail(), user.getName(), user.getRole().name());
+        // Convertir el rol del usuario en una lista de autoridades
+        List<GrantedAuthority> authorities = Collections.singletonList(
+                new SimpleGrantedAuthority(user.getRole().name())
+        );
+
+        // Generar el token JWT
+        return jwtTokenProvider.generateToken(user.getEmail(), authorities);
     }
 
     public List<User> getAllUsers() {
