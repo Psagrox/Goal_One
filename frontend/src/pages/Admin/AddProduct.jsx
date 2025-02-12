@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Admin.css';
+import LocationAutocomplete from '../../components/LocationApi/LocationAutocomplete.jsx'; 
 
 const AddProduct = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,8 @@ const AddProduct = () => {
     rating: '',
     images: [],
     description: '',
+    occupiedDates: [],
+    location: '',
   });
 
   const [error, setError] = useState('');
@@ -17,6 +20,17 @@ const AddProduct = () => {
   const token = localStorage.getItem('token');
   const [features, setFeatures] = useState([]);
   const [selectedFeatures, setSelectedFeatures] = useState([]);
+
+   // Función para manejar la selección de ubicación
+   const handleLocationSelect = (address) => {
+    console.log('Ubicación seleccionada:', address); // Verificar la dirección
+  setFormData(prev => {
+    console.log('Estado anterior:', prev); // Verificar el estado anterior
+    const newState = { ...prev, location: address };
+    console.log('Nuevo estado:', newState); // Verificar el nuevo estado
+    return newState;
+  });
+  };
 
 
   useEffect(() => {
@@ -45,8 +59,12 @@ const AddProduct = () => {
         rating: parseFloat(formData.rating),
         images: formData.images,
         description: formData.description,
-        featureIds: selectedFeatures, 
+        featureIds: selectedFeatures,
+        occupiedDates: formData.occupiedDates, 
+        location: formData.location,
       };
+
+      console.log('Payload enviado:', payload);
 
       const response = await fetch('http://localhost:8080/api/products', {
         method: 'POST',
@@ -209,6 +227,43 @@ const AddProduct = () => {
               <option key={feature.id} value={feature.id}>{feature.name}</option>
             ))}
           </select>
+        </div>
+
+        <div className="form-group">
+          <label>Ubicación:</label>
+          <LocationAutocomplete onPlaceSelected={handleLocationSelect} />
+        </div>
+
+        <div className="form-group">
+          <label>Fechas ocupadas:</label>
+          <input
+            type="date"
+            onChange={(e) => {
+              const selectedDate = e.target.value;
+              setFormData(prev => ({
+                ...prev,
+                occupiedDates: [...prev.occupiedDates, selectedDate]
+              }));
+            }}
+          />
+          <div className="selected-dates">
+            {formData.occupiedDates.map((date, index) => (
+              <div key={index} className="date-tag">
+                {date}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData(prev => ({
+                      ...prev,
+                      occupiedDates: prev.occupiedDates.filter((d, i) => i !== index)
+                    }));
+                  }}
+                >
+                  X
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
 
 

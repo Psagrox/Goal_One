@@ -3,6 +3,7 @@ package com.goalone.backend.model;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -26,6 +27,11 @@ public class ProductDTO {
     private String description;
 
     private List<Long> featureIds; // Lista de IDs de características
+
+    private List<LocalDate> occupiedDates;
+
+    @NotBlank(message = "La ubicación es obligatoria")
+    private String location; // Ubicación de la cancha
 
     // Getters y Setters (generados automáticamente por Lombok @Data)
 }

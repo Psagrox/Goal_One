@@ -3,6 +3,7 @@ package com.goalone.backend.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +68,11 @@ public class Product {
     @ElementCollection
     private List<String> images = new ArrayList<>();
 
+    @ElementCollection
+    private List<LocalDate> occupiedDates = new ArrayList<>(); // Fechas ocupadas
+
+    private String location; // Ubicación de la cancha
+
     @ManyToMany
     @JoinTable(
             name = "product_features",
@@ -83,9 +89,23 @@ public class Product {
         this.description = description;
     }
 
-
-
     public void setImages(List<String> images) {
     this.images = images != null ? images : new ArrayList<>();
+    }
+
+    public List<LocalDate> getOccupiedDates() {
+        return occupiedDates;
+    }
+
+    public void setOccupiedDates(List<LocalDate> occupiedDates) {
+        this.occupiedDates = occupiedDates != null ? occupiedDates : new ArrayList<>();
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

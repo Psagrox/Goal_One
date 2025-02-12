@@ -109,3 +109,31 @@
   width: 35px;
   margin-right: 1rem;
 }
+
+/* ProductDetail.css */
+.availability-calendar {
+  margin-top: 20px;
+}
+
+.occupied-date {
+  background-color: #ffcccc; /* Color para fechas ocupadas */
+  border-radius: 50%;
+}
+
+.error-message {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.error-message button {
+  padding: 10px 20px;
+  background-color: #3d91ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.error-message button:hover {
+  background-color: #2a7acc;
+}

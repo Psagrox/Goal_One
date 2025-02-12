@@ -1,6 +1,5 @@
 package com.goalone.backend.config;
 
-
 import com.goalone.backend.mapper.UserMapper;
 import com.goalone.backend.model.Role;
 import com.goalone.backend.model.UserDTO;
@@ -26,8 +25,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.beans.factory.annotation.Value;
 
-
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -43,12 +40,20 @@ public class SecurityConfig {
         return new JwtTokenProvider(jwtSecret);
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable) // Deshabilitar CSRF (común en APIs REST)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Habilitar CORS
+                .headers(headers -> headers
+                        .contentSecurityPolicy(csp -> csp
+                                .policyDirectives("script-src-elem 'self' https://maps.googleapis.com https://maps-api-v3.google.com 'unsafe-inline'; " +
+                                        "script-src 'self' https://maps.googleapis.com https://maps-api-v3.google.com 'unsafe-inline' 'unsafe-eval'; " +
+                                        "connect-src 'self' http://localhost:8080 https://maps.googleapis.com https://maps-api-v3.google.com; " +
+                                        "default-src 'self';")
+                        )
+
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Permitir solicitudes OPTIONS
                         .requestMatchers("/api/users/login", "/api/users/register").permitAll() // Permitir acceso público a estos endpoints

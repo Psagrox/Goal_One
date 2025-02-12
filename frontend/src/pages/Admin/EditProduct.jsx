@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './Admin.css';
+import LocationAutocomplete from '../../components/LocationApi/LocationAutocomplete.jsx'; 
 
 const EditProduct = () => {
   const { id } = useParams();
@@ -13,11 +14,18 @@ const EditProduct = () => {
     images: [],
     description: '',
     features: [],
+    occupiedDates: [],
+    location: '',
   });
   const [error, setError] = useState('');
   const token = localStorage.getItem('token');
   const [features, setFeatures] = useState([]);
   const [selectedFeatures, setSelectedFeatures] = useState([]);
+
+  // Función para manejar la selección de ubicación
+  const handleLocationSelect = (address) => {
+    setFormData(prev => ({ ...prev, location: address }));
+  };
 
 
   // Cargar los datos del producto existente
@@ -46,7 +54,15 @@ const EditProduct = () => {
           rating: data.rating.toString(),
           images: data.images,
           description: data.description,
+          occupiedDates: data.occupiedDates || [], // Nuevo campo
+          location: data.location || '', // Nuevo campo
         });
+
+        // Si el producto tiene características, selecciónalas
+        if (data.features) {
+          setSelectedFeatures(data.features.map(feature => feature.id));
+        }
+
       } catch (err) {
         setError(err.message);
       }
@@ -78,7 +94,9 @@ const EditProduct = () => {
         rating: parseFloat(formData.rating),
         images: formData.images,
         description: formData.description,
-        features: formData.selectedFeatures,
+        featureIds: selectedFeatures, 
+        occupiedDates: formData.occupiedDates, 
+        location: formData.location,
       };
 
       const response = await fetch(`http://localhost:8080/api/products/${id}`, {
@@ -240,6 +258,43 @@ const EditProduct = () => {
               <option key={feature.id} value={feature.id}>{feature.name}</option>
             ))}
           </select>
+        </div>
+
+        <div className="form-group">
+          <label>Ubicación:</label>
+          <LocationAutocomplete onPlaceSelected={handleLocationSelect} />
+        </div>
+
+        <div className="form-group">
+          <label>Fechas ocupadas:</label>
+          <input
+            type="date"
+            onChange={(e) => {
+              const selectedDate = e.target.value;
+              setFormData(prev => ({
+                ...prev,
+                occupiedDates: [...prev.occupiedDates, selectedDate]
+              }));
+            }}
+          />
+          <div className="selected-dates">
+            {formData.occupiedDates.map((date, index) => (
+              <div key={index} className="date-tag">
+                {date}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData(prev => ({
+                      ...prev,
+                      occupiedDates: prev.occupiedDates.filter((d, i) => i !== index)
+                    }));
+                  }}
+                >
+                  X
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
 
         {error && <p className="error">{error}</p>}

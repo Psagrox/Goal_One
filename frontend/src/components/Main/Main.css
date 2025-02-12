@@ -96,6 +96,7 @@
     max-width: 1200px;
     margin: 0 auto;
     width: 100%;
+    margin-top: -20px;
   }
   
   .recommendations-grid {
@@ -172,4 +173,16 @@
     text-align: center;
     margin-bottom: 2rem;
     color: #2c3e50;
+  }
+
+  .add-category {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+  }
+
+  .add-category  button{
+    background-color: #3AAFB9;
+    border: 2px solid #97C8EB;
+    margin-left: 0.5rem;
   }

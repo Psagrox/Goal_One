@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import './ProductDetail.css';
+import AvailabilityCalendar from '../AvailabilityCalendar/AvailabilityCalendar.jsx'; 
 
 const ProductDetail = () => {
     const { id } = useParams();
@@ -8,27 +9,33 @@ const ProductDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    useEffect(() => {
-        const fetchProduct = async () => {
-            try {
-                const response = await fetch(`http://localhost:8080/api/products/${id}`);
-                if (!response.ok) {
-                    throw new Error('Producto no encontrado');
-                }
-                const data = await response.json();
-                setProduct(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
+    const fetchProduct = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/products/${id}`);
+            if (!response.ok) {
+                throw new Error('Producto no encontrado');
             }
-        };
+            const data = await response.json();
+            console.log("Data", data);
+            setProduct(data);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchProduct();
     }, [id]);
 
     if (loading) return <div>Cargando...</div>;
-    if (error) return <div>Error: {error}</div>;
+    if (error) return (
+        <div className="error-message">
+            <p>Error: {error}</p>
+            <button onClick={fetchProduct}>Reintentar</button>
+        </div>
+    );
     if (!product) return <div>Producto no encontrado</div>;
 
     return (
@@ -53,8 +60,6 @@ const ProductDetail = () => {
                             </div>
                         ))}
                     </div>
-
-
                 </div>
 
                 {/* Botón "Ver más" */}
@@ -71,6 +76,15 @@ const ProductDetail = () => {
 
                 {/* Descripción */}
                 <p><strong>Descripción:</strong> {product.description}</p>
+
+                {/* Ubicación */}
+                <p><strong>Ubicación:</strong> {product.location}</p>
+
+                {/* Calendario de disponibilidad */}
+                <div className="availability-section">
+                    <h2>Disponibilidad</h2>
+                    <AvailabilityCalendar occupiedDates={product.occupiedDates} />
+                </div>
 
                 {/* Características */}
                 <div className="features">

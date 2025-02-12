@@ -201,6 +201,29 @@
   height: 30px;
 }
 
+.selected-dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.date-tag {
+  background-color: #f0f0f0;
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.date-tag button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: red;
+}
+
 
 /* Estilos responsivos */
 @media (max-width: 768px) {

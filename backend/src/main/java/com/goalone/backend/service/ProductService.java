@@ -35,6 +35,8 @@ public class ProductService {
         product.setRating(productDTO.getRating());
         product.setImages(productDTO.getImages());
         product.setDescription(productDTO.getDescription());
+        product.setOccupiedDates(productDTO.getOccupiedDates());
+        product.setLocation(productDTO.getLocation());
 
         // Obtener características por sus IDs
         List<Feature> features = featureRepository.findAllById(productDTO.getFeatureIds());
@@ -67,6 +69,10 @@ public class ProductService {
         product.setRating(productDTO.getRating());
         product.setImages(productDTO.getImages());
         product.setDescription(productDTO.getDescription());
+        product.setOccupiedDates(productDTO.getOccupiedDates());
+        product.setLocation(productDTO.getLocation());
+        product.setOccupiedDates(productDTO.getOccupiedDates());
+        product.setLocation(productDTO.getLocation());
 
         // Obtener características por sus IDs
         List<Feature> features = featureRepository.findAllById(productDTO.getFeatureIds());

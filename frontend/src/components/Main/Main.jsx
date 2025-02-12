@@ -14,13 +14,19 @@ export const Main = () => {
 
 
   useEffect(() => {
-    setCurrentPage(1); 
+    setCurrentPage(1);
   }, [selectedCategory]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/products');
+        const response = await fetch('http://localhost:8080/api/products', {
+          method: "GET",
+          credentials: "include", // Si necesitas enviar cookies o tokens de autenticación
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
         const data = await response.json();
         setProducts(data);
       } catch (error) {
@@ -38,25 +44,25 @@ export const Main = () => {
     ? products.filter((product) => product.type === selectedCategory)
     : products;
 
-    if (loading) return <div>Cargando...</div>;
-    if (error) return <div>{error}</div>;
-    
-    return (
-      <main className="main-container">
-        <SearchSection />
-        <CategoriesSection onSelectCategory={setSelectedCategory} />
-        <RecommendationsSection />
-        <section className="home-products-section">
-          <h2>Canchas Destacadas</h2>
-          <ProductsGrid 
-            products={filteredProducts} 
-            totalProducts={products.length}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-        </section>
-      </main>
-    );
+  if (loading) return <div>Cargando...</div>;
+  if (error) return <div>{error}</div>;
+
+  return (
+    <main className="main-container">
+      <SearchSection />
+      <CategoriesSection onSelectCategory={setSelectedCategory} />
+      <RecommendationsSection />
+      <section className="home-products-section">
+        <h2>Canchas Destacadas</h2>
+        <ProductsGrid
+          products={filteredProducts}
+          totalProducts={products.length}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      </section>
+    </main>
+  );
 };
 
 export default Main;
