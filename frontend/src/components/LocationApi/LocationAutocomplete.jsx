@@ -6,7 +6,7 @@ const libraries = ['places'];
 
 const LocationAutocomplete = ({ onPlaceSelected }) => {
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: 'AIzaSyAn-CgrOLhDDIlLhiOR98Cxryg8oXDixOo', // Reemplaza con tu API Key
+    googleMapsApiKey: '', // Reemplaza con tu API Key
     libraries,
   });
 
