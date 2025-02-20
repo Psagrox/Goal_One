@@ -62,6 +62,7 @@ public class SecurityConfig {
                         .requestMatchers("/uploads/**").permitAll() // Permitir acceso público a las imágenes subidas
                         .requestMatchers("/api/users/**", "/admin/**").hasAuthority("ADMIN") // Proteger endpoints de admin
                         .requestMatchers("/api/features").hasAuthority("ADMIN")
+                        .requestMatchers("/api/products/suggestions").permitAll()
                         .anyRequest().authenticated() // Cualquier otra solicitud requiere autenticación
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // Añadir el filtro JWT

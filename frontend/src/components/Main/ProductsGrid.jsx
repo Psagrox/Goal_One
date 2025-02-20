@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './ProductsGrid.css';
 import { Link } from 'react-router-dom';
 
-const ProductsGrid = ({ products }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 6; 
+const ProductsGrid = ({ products, currentPage, setCurrentPage }) => {
+  const productsPerPage = 6;
 
   // Calcular el índice de los productos a mostrar
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -14,19 +13,11 @@ const ProductsGrid = ({ products }) => {
   // Cambiar de página
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  // Calcular el total de productos
-  const totalProducts = products.length;
-
   // Generar números de página
   const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(totalProducts / productsPerPage); i++) {
+  for (let i = 1; i <= Math.ceil(products.length / productsPerPage); i++) {
     pageNumbers.push(i);
   }
-
-  // Limitar la cantidad de botones de paginación visibles
-  const maxPageButtons = 5; // Mostrar solo 5 botones de paginación a la vez
-  const startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
-  const endPage = Math.min(pageNumbers.length, startPage + maxPageButtons - 1);
 
   return (
     <div className="products-grid">
@@ -68,7 +59,7 @@ const ProductsGrid = ({ products }) => {
         >
           Anterior
         </button>
-        {pageNumbers.slice(startPage - 1, endPage).map((number) => (
+        {pageNumbers.map((number) => (
           <button
             key={number}
             onClick={() => paginate(number)}

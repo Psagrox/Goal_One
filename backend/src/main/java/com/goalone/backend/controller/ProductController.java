@@ -98,5 +98,31 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/suggestions")
+    public ResponseEntity<List<String>> getProductSuggestions(@RequestParam String query) {
+        try {
+            List<String> suggestions = productService.findProductNamesContaining(query);
+            return ResponseEntity.ok(suggestions);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(Collections.singletonList("Error al obtener sugerencias"));
+        }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Product>> searchProducts(
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate) {
+        try {
+            List<Product> products = productService.searchProducts(searchTerm, startDate, endDate);
+            return ResponseEntity.ok(products);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(Collections.emptyList());
+        }
+    }
+
+
 
 }

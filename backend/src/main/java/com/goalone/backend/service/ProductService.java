@@ -58,6 +58,19 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+    public List<String> findProductNamesContaining(String query) {
+        return productRepository.findByNameContainingIgnoreCase(query)
+                .stream()
+                .map(Product::getName)
+                .toList();
+    }
+
+
+    public List<Product> searchProducts(String searchTerm, String startDate, String endDate) {
+        return productRepository.findByNameContainingIgnoreCase(searchTerm);
+    }
+
+
     @Transactional
     public Product updateProduct(Long id, ProductDTO productDTO) {
         Product product = productRepository.findById(id)
