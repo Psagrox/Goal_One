@@ -68,4 +68,14 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
+
+    @PostMapping("/favorites/add")
+    public ResponseEntity<?> addFavorite(@RequestParam Long userId, @RequestParam Long productId) {
+        try {
+            userService.addFavorite(userId, productId);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 }

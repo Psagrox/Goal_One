@@ -1,8 +1,10 @@
 package com.goalone.backend.service;
 
 import com.goalone.backend.config.JwtTokenProvider;
+import com.goalone.backend.model.Product;
 import com.goalone.backend.model.User;
 import com.goalone.backend.model.UserDTO;
+import com.goalone.backend.repository.ProductRepository;
 import com.goalone.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.goalone.backend.model.Role;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +29,9 @@ public class UserService {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     public User save(User user) {
         return userRepository.save(user);
@@ -94,5 +100,27 @@ public class UserService {
         public InvalidPasswordException(String message) {
             super(message);
         }
+    }
+
+    @Transactional
+    public void addFavorite(Long userId, Long productId) {
+        // Obtener el usuario por su ID
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Obtener el producto por su ID
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        // Verificar si el producto ya está en la lista de favoritos del usuario
+        if (user.getFavorites().contains(product)) {
+            throw new RuntimeException("El producto ya está en la lista de favoritos");
+        }
+
+        // Agregar el producto a la lista de favoritos del usuario
+        user.getFavorites().add(product);
+
+        // Guardar el usuario actualizado en la base de datos
+        userRepository.save(user);
     }
 }

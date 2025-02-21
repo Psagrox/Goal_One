@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import './ProductDetail.css';
-import AvailabilityCalendar from '../AvailabilityCalendar/AvailabilityCalendar.jsx'; 
+import AvailabilityCalendar from '../AvailabilityCalendar/AvailabilityCalendar.jsx';
 
 const ProductDetail = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [isFavorite, setIsFavorite] = useState(false);
 
     const fetchProduct = async () => {
         try {
@@ -16,12 +17,31 @@ const ProductDetail = () => {
                 throw new Error('Producto no encontrado');
             }
             const data = await response.json();
-            console.log("Data", data);
             setProduct(data);
         } catch (err) {
             setError(err.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const addToFavorites = async () => {
+        try {
+            const userId = 1; // Aquí deberías obtener el ID del usuario autenticado
+            const response = await fetch(`http://localhost:8080/api/users/favorites/add?userId=${userId}&productId=${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Error al agregar a favoritos');
+            }
+
+            setIsFavorite(true);
+        } catch (err) {
+            console.error(err);
         }
     };
 
@@ -98,6 +118,11 @@ const ProductDetail = () => {
                         ))}
                     </ul>
                 </div>
+
+                {/* Botón de agregar a favoritos */}
+                <button onClick={addToFavorites} disabled={isFavorite}>
+                    {isFavorite ? 'En favoritos' : 'Agregar a favoritos'}
+                </button>
             </div>
         </div>
     );

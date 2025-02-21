@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Getter
 @Setter
@@ -35,4 +38,12 @@ public class User {
         this.name = name;
         this.role = role;
     }
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_favorites",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    private Set<Product> favorites = new HashSet<>();
 }
