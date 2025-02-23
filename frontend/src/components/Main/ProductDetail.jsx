@@ -25,21 +25,50 @@ const ProductDetail = () => {
         }
     };
 
-    const addToFavorites = async () => {
+    const checkIfFavorite = async () => {
         try {
+            const token = localStorage.getItem('token');
             const userId = 1; // Aquí deberías obtener el ID del usuario autenticado
-            const response = await fetch(`http://localhost:8080/api/users/favorites/add?userId=${userId}&productId=${id}`, {
-                method: 'POST',
+            const response = await fetch(`http://localhost:8080/api/users/favorites?userId=${userId}`, {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
             });
 
             if (!response.ok) {
-                throw new Error('Error al agregar a favoritos');
+                throw new Error('Error al verificar favoritos');
             }
 
-            setIsFavorite(true);
+            const favorites = await response.json();
+            const isProductFavorite = favorites.some(favorite => favorite.id === parseInt(id));
+            setIsFavorite(isProductFavorite);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const toggleFavorite = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const userId = 1; // Aquí deberías obtener el ID del usuario autenticado
+            const method = isFavorite ? 'DELETE' : 'POST';
+            const endpoint = isFavorite ? 'remove' : 'add';
+
+            const response = await fetch(`http://localhost:8080/api/users/favorites/${endpoint}?userId=${userId}&productId=${id}`, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error al ${isFavorite ? 'remover' : 'agregar'} a favoritos`);
+            }
+
+            setIsFavorite(!isFavorite); // Cambiar el estado de isFavorite
         } catch (err) {
             console.error(err);
         }
@@ -47,6 +76,7 @@ const ProductDetail = () => {
 
     useEffect(() => {
         fetchProduct();
+        checkIfFavorite(); // Verificar si la cancha está en favoritos al cargar la página
     }, [id]);
 
     if (loading) return <div>Cargando...</div>;
@@ -90,6 +120,20 @@ const ProductDetail = () => {
 
             {/* Información del producto */}
             <div className="product-info">
+                {/* Botón de agregar/remover de favoritos */}
+                <button
+                    onClick={toggleFavorite}
+                    className={
+                        loading
+                            ? "favorite-button-disabled" // Si está cargando, deshabilitar el botón
+                            : isFavorite
+                                ? "favorite-button-remove" // Si está en favoritos, usar el estilo de remover
+                                : "favorite-button-add" // Si no está en favoritos, usar el estilo de agregar
+                    }
+                    disabled={loading} // Deshabilitar el botón si está cargando
+                >
+                    {isFavorite ? 'Remover de favoritos' : 'Agregar a favoritos'}
+                </button>
                 <p><strong>Tipo:</strong> {product.type}</p>
                 <p><strong>Precio:</strong> {product.price}</p>
                 <p><strong>Calificación:</strong> ⭐ {product.rating}</p>
@@ -119,10 +163,6 @@ const ProductDetail = () => {
                     </ul>
                 </div>
 
-                {/* Botón de agregar a favoritos */}
-                <button onClick={addToFavorites} disabled={isFavorite}>
-                    {isFavorite ? 'En favoritos' : 'Agregar a favoritos'}
-                </button>
             </div>
         </div>
     );

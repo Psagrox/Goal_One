@@ -191,3 +191,28 @@
     display: flex;
     flex-direction: column;
   }
+
+  /* Estilo para el botón cuando el producto está en favoritos */
+.favorite-button-remove {
+  background-color: gray; /* Color gris */
+  color: white; /* Texto blanco */
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+/* Estilo para el botón cuando el producto no está en favoritos */
+.favorite-button-add {
+  background-color: blue; /* Color azul */
+  color: white; /* Texto blanco */
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+/* Estilo para el botón deshabilitado */
+.favorite-button-disabled {
+  background-color: lightgray; /* Color gris claro */
+  color: darkgray; /* Texto gris oscuro */
+  cursor: not-allowed;
+}

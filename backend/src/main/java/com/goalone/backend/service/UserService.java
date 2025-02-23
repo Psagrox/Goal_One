@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.goalone.backend.model.Role;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -122,5 +123,28 @@ public class UserService {
 
         // Guardar el usuario actualizado en la base de datos
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void removeFavorite(Long userId, Long productId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        if (!user.getFavorites().contains(product)) {
+            throw new RuntimeException("El producto no está en la lista de favoritos");
+        }
+
+        user.getFavorites().remove(product);
+        userRepository.save(user);
+    }
+
+    public List<Product> getFavorites(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        return new ArrayList<>(user.getFavorites());
     }
 }

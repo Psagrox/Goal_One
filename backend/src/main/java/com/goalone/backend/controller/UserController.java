@@ -2,6 +2,7 @@ package com.goalone.backend.controller;
 
 import com.goalone.backend.config.JwtTokenProvider;
 import com.goalone.backend.model.LoginRequest;
+import com.goalone.backend.model.Product;
 import com.goalone.backend.model.User;
 import com.goalone.backend.model.UserDTO;
 import com.goalone.backend.service.UserService;
@@ -76,6 +77,26 @@ public class UserController {
             return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/favorites/remove")
+    public ResponseEntity<?> removeFavorite(@RequestParam Long userId, @RequestParam Long productId) {
+        try {
+            userService.removeFavorite(userId, productId);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/favorites")
+    public ResponseEntity<List<Product>> getFavorites(@RequestParam Long userId) {
+        try {
+            List<Product> favorites = userService.getFavorites(userId);
+            return ResponseEntity.ok(favorites);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 }

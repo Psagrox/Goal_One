@@ -18,6 +18,7 @@ import ProtectedRoute from './components/Router/ProtectedRoute';
 import ManageUsers from './pages/Admin/ManageUsers';
 import ManageFeatures from './pages/Admin/ManageFeatures';
 import ManageCategories from './pages/Admin/ManageCategories';
+import FavoritesPage from './components/UserAvatar/FavoritesPages';
 
 function App() {
   const [user, setUser] = useState(undefined);
@@ -59,6 +60,7 @@ function App() {
         <Route path="/product/:id/gallery" element={<ProductGalleryPage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login setUser={setUser} />} />
+        <Route path="/favorites" element={<FavoritesPage />} />
 
         {/* Rutas protegidas */}
         <Route path="/perfil" element={

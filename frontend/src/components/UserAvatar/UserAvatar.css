@@ -9,3 +9,8 @@
     color: white;
     font-weight: bold;
   }
+
+  .user-avatar:hover {
+    background-color: #093A3E;
+    cursor: pointer;
+  }

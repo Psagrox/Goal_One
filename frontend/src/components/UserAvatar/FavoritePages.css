@@ -1,0 +1,37 @@
+.favorites-page {
+    padding: 20px;
+  }
+  
+  .favorites-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .favorite-item {
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  .favorite-item h2 {
+    margin: 0;
+  }
+  
+  .favorite-item p {
+    margin: 5px 0;
+  }
+  
+  .favorite-item button {
+    background-color: #3AAFB9;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .favorite-item button:hover {
+    background-color: #093A3E;
+  }
