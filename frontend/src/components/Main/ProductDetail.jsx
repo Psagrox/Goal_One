@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import './ProductDetail.css';
 import AvailabilityCalendar from '../AvailabilityCalendar/AvailabilityCalendar.jsx';
+import SharePopup from '../SharePopup/SharePopup.jsx';
+import { useNavigate } from 'react-router-dom';
 
 const ProductDetail = () => {
     const { id } = useParams();
@@ -9,12 +11,40 @@ const ProductDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [isFavorite, setIsFavorite] = useState(false);
+    const [showSharePopup, setShowSharePopup] = useState(false); // Estado para controlar la ventana emergente
+    const navigate = useNavigate();
+
+    const [reviews, setReviews] = useState([]); // Para almacenar las reseñas
+    const [averageRating, setAverageRating] = useState(0); // Para almacenar la puntuación media
+    const [reviewCount, setReviewCount] = useState(0); // Para almacenar el número de reseñas
+    const [userRating, setUserRating] = useState(0); // Para almacenar la puntuación del usuario
+    const [userComment, setUserComment] = useState(""); // Para almacenar el comentario del usuario
+    const [userHasReservation, setUserHasReservation] = useState(false); // Para verificar si el usuario tiene una reserva
+    const [isAuthenticated, setIsAuthenticated] = useState(false); // Para verificar si el usuario está autenticado
+    const [hoverRating, setHoverRating] = useState(0); // Estado para manejar el hover
+
 
     const fetchProduct = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/products/${id}`);
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:8080/api/products/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
             if (!response.ok) {
-                throw new Error('Producto no encontrado');
+                if (response.status === 401) {
+                    // Token inválido o expirado, redirigir al login
+                    localStorage.removeItem('token');
+                    navigate('/login', {
+                        state: {
+                            message: 'Tu sesión ha expirado. Inicia sesión nuevamente.',
+                        },
+                    });
+                } else {
+                    throw new Error('Producto no encontrado');
+                }
             }
             const data = await response.json();
             setProduct(data);
@@ -24,6 +54,79 @@ const ProductDetail = () => {
             setLoading(false);
         }
     };
+
+    const fetchReviews = async () => {
+        try {
+            const token = localStorage.getItem('token'); // Obtener el token JWT
+            const response = await fetch(`http://localhost:8080/api/reviews/product/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Incluir el token en el header
+                },
+            });
+            if (!response.ok) throw new Error('Error al obtener reseñas');
+            const data = await response.json();
+            setReviews(data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const fetchAverageRating = async () => {
+        try {
+            const token = localStorage.getItem('token'); // Obtener el token JWT
+            const response = await fetch(`http://localhost:8080/api/reviews/product/${id}/average-rating`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Incluir el token en el header
+                },
+            });
+            if (!response.ok) throw new Error('Error al obtener la puntuación media');
+            const data = await response.json();
+            setAverageRating(data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const fetchReviewCount = async () => {
+        try {
+            const token = localStorage.getItem('token'); // Obtener el token JWT
+            const response = await fetch(`http://localhost:8080/api/reviews/product/${id}/review-count`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Incluir el token en el header
+                },
+            });
+            if (!response.ok) throw new Error('Error al obtener el número de reseñas');
+            const data = await response.json();
+            setReviewCount(data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+    const checkIfUserHasReservation = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const userId = 1; // Obtener el ID del usuario autenticado dinámicamente
+            const response = await fetch(`http://localhost:8080/api/reservations/user/${userId}/product/${id}/completed`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Error al verificar reservas');
+            }
+
+            const hasReservation = await response.json();
+            setUserHasReservation(hasReservation);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
 
     const checkIfFavorite = async () => {
         try {
@@ -74,9 +177,73 @@ const ProductDetail = () => {
         }
     };
 
+    const handleSubmitReview = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const userId = 1; // Debes obtener este ID dinámicamente desde la autenticación
+            console.log("Rating:", userRating, "Comment:", userComment);
+
+            const review = {
+                product: { id }, // Modificar para incluir product como objeto si el backend lo requiere
+                rating: userRating,
+                comment: userComment,
+            };
+
+            const response = await fetch(`http://localhost:8080/api/reviews?userId=${userId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(review),
+            });
+
+            if (!response.ok) throw new Error('Error al enviar la reseña');
+
+            // Actualizar las reseñas y la puntuación media
+            fetchReviews();
+            fetchAverageRating();
+            fetchReviewCount();
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+
+    const handleReserveClick = () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            // Redirigir al login con un mensaje y la ruta de origen
+            navigate('/login', {
+                state: {
+                    message: 'Para reservar, debes iniciar sesión o registrarte.',
+                    fromReserve: id, // Guardar el ID del producto para redirigir después del login
+                },
+            });
+        } else {
+            // Redirigir a la página de reserva
+            navigate(`/reserve/${id}`);
+        }
+    };
+
     useEffect(() => {
-        fetchProduct();
-        checkIfFavorite(); // Verificar si la cancha está en favoritos al cargar la página
+        const token = localStorage.getItem('token');
+        if (!token) {
+            // Redirigir al login si no hay token
+            navigate('/login', {
+                state: {
+                    message: 'Debes iniciar sesión para acceder a esta página.',
+                },
+            });
+        } else {
+            // Si hay token, realizar las solicitudes
+            checkIfUserHasReservation();
+            fetchProduct();
+            checkIfFavorite();
+            fetchReviews();
+            fetchAverageRating();
+            fetchReviewCount();
+        }
     }, [id]);
 
     if (loading) return <div>Cargando...</div>;
@@ -134,9 +301,67 @@ const ProductDetail = () => {
                 >
                     {isFavorite ? 'Remover de favoritos' : 'Agregar a favoritos'}
                 </button>
+
+                {/* Botón de compartir */}
+                <button
+                    onClick={() => setShowSharePopup(true)}
+                    className="share-button"
+                >
+                    Compartir
+                </button>
+
                 <p><strong>Tipo:</strong> {product.type}</p>
                 <p><strong>Precio:</strong> {product.price}</p>
-                <p><strong>Calificación:</strong> ⭐ {product.rating}</p>
+                {/* Sección de valoraciones */}
+                <div className="reviews-section">
+                    <h2>Valoraciones</h2>
+                    <div className="average-rating">
+                        ⭐ {averageRating.toFixed(1)} ({reviewCount} reseñas)
+                    </div>
+
+                    {/* Formulario para dejar una reseña */}
+                    <div className="review-form">
+                        <h3>Deja tu reseña</h3>
+                        <div className="rating-stars">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <span
+                                    key={star}
+                                    onMouseEnter={() => setHoverRating(star)}
+                                    onMouseLeave={() => setHoverRating(0)}
+                                    onClick={() => setUserRating(star)}
+                                    style={{ color: star <= (hoverRating || userRating) ? 'gold' : 'gray', cursor: 'pointer' }}
+                                >
+                                    ★
+                                </span>
+                            ))}
+                        </div>
+                        <textarea
+                            placeholder="Escribe tu comentario..."
+                            value={userComment}
+                            onChange={(e) => setUserComment(e.target.value)}
+                        />
+                        <button onClick={() => handleSubmitReview()}>Enviar Reseña</button>
+
+                    </div>
+
+                    {/* Lista de reseñas */}
+                    <div className="reviews-list">
+                        {reviews.map((review) => (
+                            <div key={review.id} className="review-item">
+                                <div className="review-header">
+                                    <span className="review-user">{review.user.name}</span>
+                                    <span className="review-date">
+                                        {new Date(review.createdAt).toLocaleDateString()}
+                                    </span>
+                                </div>
+                                <div className="review-rating">
+                                    ⭐ {product.averageRating.toFixed(1)} ({product.reviewCount} reseñas)
+                                </div>
+                                <p className="review-comment">{review.comment}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
 
                 {/* Descripción */}
                 <p><strong>Descripción:</strong> {product.description}</p>
@@ -162,8 +387,28 @@ const ProductDetail = () => {
                         ))}
                     </ul>
                 </div>
-
             </div>
+
+            {/* Ventana emergente de compartir */}
+            {showSharePopup && (
+                <SharePopup
+                    product={product}
+                    onClose={() => setShowSharePopup(false)}
+                />
+            )}
+
+            <div className="product-info">
+                {/* Botón de reserva */}
+                <button
+                    onClick={() => handleReserveClick()}
+                    className="reserve-button"
+                >
+                    Reservar
+                </button>
+
+                {/* Resto de la información del producto... */}
+            </div>
+
         </div>
     );
 };

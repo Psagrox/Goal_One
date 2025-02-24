@@ -53,6 +53,7 @@ public class UserController {
         // Crear el token JWT
         String token = jwtTokenProvider.generateToken(
                 newUser.getEmail(),
+                newUser.getId(),
                 List.of(new SimpleGrantedAuthority(userRole)) // Convertir el rol a una lista de autoridades
         );
 

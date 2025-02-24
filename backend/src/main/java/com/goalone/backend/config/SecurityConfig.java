@@ -60,6 +60,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/products/**").permitAll() // Permitir acceso público a /api/products y sus subrutas
                         .requestMatchers("/api/products").permitAll()
                         .requestMatchers("/uploads/**").permitAll() // Permitir acceso público a las imágenes subidas
+                        .requestMatchers("/api/reviews/**").permitAll() // Permitir acceso público a los endpoints de reseñas
                         .requestMatchers("/api/users/favorites/add").authenticated() // Permitir acceso autenticado a este endpoint
                         .requestMatchers("/api/users/**", "/admin/**").hasAuthority("ADMIN") // Proteger endpoints de admin
                         .requestMatchers("/api/features").hasAuthority("ADMIN")

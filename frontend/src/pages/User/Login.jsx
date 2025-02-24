@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom"; // Importar useLocation
 import "./Login.css";
 import { jwtDecode } from "jwt-decode";
 
@@ -11,6 +11,10 @@ const Login = ({ setUser }) => {
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState("");
   const navigate = useNavigate();
+  const location = useLocation(); // Obtener la ubicación actual
+
+  // Mensaje de reserva obligatoria
+  const reservationMessage = location.state?.message || "";
 
   // Validaciones
   const validateForm = () => {
@@ -40,48 +44,56 @@ const Login = ({ setUser }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setServerError("");
-  
+
     if (!validateForm()) {
       return;
     }
-  
+
     try {
       const response = await fetch("http://localhost:8080/api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-  
+
       if (!response.ok) {
         throw new Error("Credenciales incorrectas");
       }
-  
+
       const data = await response.json();
-    const token = data.token;
+      const token = data.token;
 
-    if (!token) {
-      throw new Error("No se recibió un token válido");
+      if (!token) {
+        throw new Error("No se recibió un token válido");
+      }
+
+      const decodedToken = jwtDecode(token); // Decodifica el token
+      const user = {
+        token,
+        email: decodedToken.sub,
+        name: decodedToken.name,
+        role: decodedToken.role,
+      };
+
+      localStorage.setItem("token", token); // Guardar el JWT en localStorage
+      setUser(user); // Guardar el usuario en el estado global
+
+      // Redirigir al usuario a la página de reserva si vino desde allí
+      const fromReserve = location.state?.fromReserve;
+      if (fromReserve) {
+        navigate(`/reserve/${fromReserve}`);
+      } else {
+        navigate("/"); // Redirigir al inicio
+      }
+    } catch (err) {
+      setServerError("Email o contraseña incorrectos. Intenta de nuevo.");
     }
-
-    const decodedToken = jwtDecode(token); // Decodifica el token
-    const user = {
-      token,
-      email: decodedToken.sub, 
-      name: decodedToken.name,
-      role: decodedToken.role,
-    };
-
-    localStorage.setItem("token", token); // Guardar el JWT en localStorage
-    setUser(user); // Guardar el usuario en el estado global
-    navigate("/"); // Redirigir al inicio
-  } catch (err) {
-    setServerError("Email o contraseña incorrectos. Intenta de nuevo.");
-  }
-};
+  };
 
   return (
     <div className="login-container">
       <h2>Iniciar Sesión</h2>
+      {reservationMessage && <p className="reservation-message">{reservationMessage}</p>}
       <form className="login-form" onSubmit={handleSubmit}>
         <div>
           <label>Email:</label>

@@ -24,11 +24,12 @@
   justify-content: center;
   flex-wrap: wrap;
   gap: 10px;
-  position: relative; 
+  position: relative;
 }
 
 .main-image {
-  flex: 1 1 50%; /* Ocupa la mitad izquierda */
+  flex: 1 1 50%;
+  /* Ocupa la mitad izquierda */
   max-width: 50%;
 }
 
@@ -39,7 +40,8 @@
 }
 
 .grid-images {
-  flex: 1 1 50%; /* Ocupa la mitad derecha */
+  flex: 1 1 50%;
+  /* Ocupa la mitad derecha */
   max-width: 50%;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -56,7 +58,7 @@
 
 /* Estilos para el botón "Ver más" */
 .view-more {
-  width: 50px; 
+  width: 50px;
   margin-top: 1rem;
   background-color: rgba(0, 0, 0, 0.7);
   padding: 5px 10px;
@@ -71,6 +73,7 @@
 
 /* Estilos responsivos */
 @media (max-width: 768px) {
+
   .main-image,
   .grid-images {
     flex: 1 1 100%;
@@ -83,7 +86,7 @@
   }
 
   .view-more {
-    bottom: 5px; 
+    bottom: 5px;
     right: 5px;
   }
 }
@@ -105,7 +108,7 @@
   font-size: 1.1rem;
 }
 
-.features img{
+.features img {
   width: 35px;
   margin-right: 1rem;
 }
@@ -116,7 +119,8 @@
 }
 
 .occupied-date {
-  background-color: #ffcccc; /* Color para fechas ocupadas */
+  background-color: #ffcccc;
+  /* Color para fechas ocupadas */
   border-radius: 50%;
 }
 
@@ -136,4 +140,163 @@
 
 .error-message button:hover {
   background-color: #2a7acc;
+}
+
+
+/* Estilos para el bloque de políticas */
+.policies-section {
+  width: 100%;
+  margin-top: 40px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-top: 1px solid #ccc;
+}
+
+.policies-title {
+  font-size: 1.5rem;
+  text-decoration: underline;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.policies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.policy {
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.policy h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.policy p {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* Estilos para el botón de compartir */
+.share-button {
+  background-color: #093A3E;
+  /* Color verde */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 10px;
+  margin-left: 1rem;
+}
+
+.share-button:hover {
+  background-color: #3AAFB9;
+  /* Color verde más oscuro al pasar el mouse */
+}
+
+/* Estilos para la sección de valoraciones */
+.reviews-section {
+  margin-top: 40px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+}
+
+.average-rating {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+.review-form {
+  margin-bottom: 30px;
+}
+
+.rating-stars {
+  margin-bottom: 10px;
+  display: flex;
+  gap: 5px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.rating-stars span {
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.star-filled {
+  color: gold;
+}
+
+.star-empty {
+  color: #ccc;
+}
+
+.review-form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.review-form button {
+  background-color: #093A3E;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.review-item {
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.review-user {
+  font-weight: bold;
+}
+
+.review-date {
+  color: #666;
+}
+
+.review-rating {
+  margin-bottom: 10px;
+}
+
+.review-comment {
+  color: #333;
+}
+
+.favorite-button-add {
+  background-color: #093A3E;
+}
+
+.favorite-button-add:hover {
+  background-color: #3AAFB9
 }

@@ -39,9 +39,10 @@ public class JwtTokenProvider {
         }
     }
 
-    public String generateToken(String username, Collection<? extends GrantedAuthority> authorities) {
+    public String generateToken(String username,Long userId, Collection<? extends GrantedAuthority> authorities) {
         return Jwts.builder()
                 .subject(username)
+                .claim("userId", userId)
                 .claim("roles", authorities.stream()
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toList()))
@@ -84,4 +85,19 @@ public class JwtTokenProvider {
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
+
+    public Long   getUserIdFromToken(String token) {
+        // No necesitas convertir jwtSecret a bytes, ya es una SecretKey
+        Claims claims = Jwts.parser()
+                .verifyWith(jwtSecret)  // Usar directamente la clave secreta
+                .build()
+                .parseSignedClaims(token)  // Parsear el token y obtener las reclamaciones
+                .getPayload();  // Obtener el cuerpo de las reclamaciones
+
+        return claims.get("userId", Long.class);  // Asumimos que "userId" está almacenado como una reclamación en el token
+    }
+
+
+
+
 }

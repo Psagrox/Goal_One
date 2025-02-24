@@ -59,9 +59,11 @@ public class UserService {
     }
 
     public String loginUser(String email, String password) {
+        // Buscar al usuario por email
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
 
+        // Verificar la contraseña
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new InvalidPasswordException("Contraseña incorrecta");
         }
@@ -72,7 +74,11 @@ public class UserService {
         );
 
         // Generar el token JWT
-        return jwtTokenProvider.generateToken(user.getEmail(), authorities);
+        return jwtTokenProvider.generateToken(
+                user.getEmail(), // username (String)
+                user.getId(),    // userId (Long)
+                authorities      // authorities (Collection<? extends GrantedAuthority>)
+        );
     }
 
     public List<User> getAllUsers() {

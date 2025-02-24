@@ -19,6 +19,7 @@ import ManageUsers from './pages/Admin/ManageUsers';
 import ManageFeatures from './pages/Admin/ManageFeatures';
 import ManageCategories from './pages/Admin/ManageCategories';
 import FavoritesPage from './components/UserAvatar/FavoritesPages';
+import ReservationPage from './pages/ReservationPage/ReservationPage';
 
 function App() {
   const [user, setUser] = useState(undefined);
@@ -66,6 +67,12 @@ function App() {
         <Route path="/perfil" element={
           <ProtectedRoute user={user}>
             <Profile />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/reserve/:id" element={
+          <ProtectedRoute user={user}>
+            <ReservationPage />
           </ProtectedRoute>
         } />
 
