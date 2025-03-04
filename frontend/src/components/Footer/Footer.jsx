@@ -1,5 +1,6 @@
 import React from 'react';
 import './Footer.css';
+import WhatsAppButton from '../WhatsAppButton/WhatsAppButton.jsx'; // Importa el botón de WhatsApp
 
 const Footer = () => {
   return (
@@ -27,6 +28,9 @@ const Footer = () => {
       <div className="footer-bottom">
         <p>&copy; {new Date().getFullYear()} ReservaCancha. Todos los derechos reservados.</p>
       </div>
+
+      {/* Botón de WhatsApp */}
+      <WhatsAppButton />
     </footer>
   );
 };

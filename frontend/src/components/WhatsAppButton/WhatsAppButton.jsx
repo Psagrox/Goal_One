@@ -1,6 +1,5 @@
 import React from 'react';
 import './WhatsAppButton.css'; // Archivo CSS para estilos
-import whatsappIcon from 'https://img.icons8.com/?size=100&id=aUugRyDZVcWE&format=png&color=000000'; // Ícono de WhatsApp
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -20,7 +19,11 @@ const WhatsAppButton = () => {
 
     return (
         <div className="whatsapp-button" onClick={handleClick}>
-            <img src={whatsappIcon} alt="WhatsApp" />
+            {/* Usa la URL directamente en el atributo src */}
+            <img 
+                src="https://img.icons8.com/?size=100&id=aUugRyDZVcWE&format=png&color=000000" 
+                alt="WhatsApp" 
+            />
         </div>
     );
 };
