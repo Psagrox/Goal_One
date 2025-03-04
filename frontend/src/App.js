@@ -20,12 +20,13 @@ import ManageFeatures from './pages/Admin/ManageFeatures';
 import ManageCategories from './pages/Admin/ManageCategories';
 import FavoritesPage from './components/UserAvatar/FavoritesPages';
 import ReservationPage from './pages/ReservationPage/ReservationPage';
+import UserDashboard from './components/UserAvatar/UserDashboard'; // Nueva página de dashboard del usuario
+import ReservationHistory from './components/UserAvatar/ReservationHistory'; // Nueva página de historial de reservas
 
 function App() {
   const [user, setUser] = useState(undefined);
 
   useEffect(() => {
-
     const storedToken = localStorage.getItem("token");
 
     if (storedToken) {
@@ -61,21 +62,43 @@ function App() {
         <Route path="/product/:id/gallery" element={<ProductGalleryPage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login setUser={setUser} />} />
-        <Route path="/favorites" element={<FavoritesPage />} />
 
-        {/* Rutas protegidas */}
+        {/* Nueva ruta para el dashboard del usuario */}
+        <Route path="/user-dashboard" element={
+          <ProtectedRoute user={user}>
+            <UserDashboard />
+          </ProtectedRoute>
+        } />
+
+        {/* Ruta para el historial de reservas */}
+        <Route path="/reservations" element={
+          <ProtectedRoute user={user}>
+            <ReservationHistory />
+          </ProtectedRoute>
+        } />
+
+        {/* Ruta para favoritos */}
+        <Route path="/favorites" element={
+          <ProtectedRoute user={user}>
+            <FavoritesPage />
+          </ProtectedRoute>
+        } />
+
+        {/* Ruta para el perfil del usuario */}
         <Route path="/perfil" element={
           <ProtectedRoute user={user}>
             <Profile />
           </ProtectedRoute>
         } />
 
+        {/* Ruta para la página de reserva */}
         <Route path="/reserve/:id" element={
           <ProtectedRoute user={user}>
             <ReservationPage />
           </ProtectedRoute>
         } />
 
+        {/* Rutas de administración */}
         <Route path="/admin" element={
           <ProtectedRoute user={user} requiredRole="ADMIN">
             <AdminPanel />
@@ -96,20 +119,21 @@ function App() {
             <EditProduct />
           </ProtectedRoute>
         } />
-        <Route path="/admin/manage-users" element={<ManageUsers />} />
+        <Route path="/admin/manage-users" element={
+          <ProtectedRoute user={user} requiredRole="ADMIN">
+            <ManageUsers />
+          </ProtectedRoute>
+        } />
         <Route path="/admin/manage-features" element={
           <ProtectedRoute user={user} requiredRole="ADMIN">
             <ManageFeatures />
           </ProtectedRoute>
         } />
-
-        {/* Ruta para gestionar categorías */}
         <Route path="/admin/manage-categories" element={
           <ProtectedRoute user={user} requiredRole="ADMIN">
             <ManageCategories />
           </ProtectedRoute>
         } />
-
       </Routes>
       <Footer />
     </BrowserRouter>

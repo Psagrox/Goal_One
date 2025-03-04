@@ -4,6 +4,8 @@ import './ProductDetail.css';
 import AvailabilityCalendar from '../AvailabilityCalendar/AvailabilityCalendar.jsx';
 import SharePopup from '../SharePopup/SharePopup.jsx';
 import { useNavigate } from 'react-router-dom';
+import moment from 'moment';
+
 
 const ProductDetail = () => {
     const { id } = useParams();
@@ -20,8 +22,13 @@ const ProductDetail = () => {
     const [userRating, setUserRating] = useState(0); // Para almacenar la puntuación del usuario
     const [userComment, setUserComment] = useState(""); // Para almacenar el comentario del usuario
     const [userHasReservation, setUserHasReservation] = useState(false); // Para verificar si el usuario tiene una reserva
-    const [isAuthenticated, setIsAuthenticated] = useState(false); // Para verificar si el usuario está autenticado
     const [hoverRating, setHoverRating] = useState(0); // Estado para manejar el hover
+    const [selectedDate, setSelectedDate] = useState(null); // Estado para almacenar la fecha seleccionada
+
+    const handleDateSelect = (date) => {
+        setSelectedDate(date); // Almacena la fecha seleccionada en el estado
+        console.log("Fecha seleccionada:", date);
+    };
 
 
     const fetchProduct = async () => {
@@ -74,18 +81,19 @@ const ProductDetail = () => {
 
     const fetchAverageRating = async () => {
         try {
-            const token = localStorage.getItem('token'); // Obtener el token JWT
+            const token = localStorage.getItem('token');
             const response = await fetch(`http://localhost:8080/api/reviews/product/${id}/average-rating`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`, // Incluir el token en el header
+                    'Authorization': `Bearer ${token}`,
                 },
             });
             if (!response.ok) throw new Error('Error al obtener la puntuación media');
             const data = await response.json();
-            setAverageRating(data);
+            setAverageRating(data || 0); // Asignar 0 si data es undefined o null
         } catch (err) {
             console.error(err);
+            setAverageRating(0); // Asignar 0 en caso de error
         }
     };
 
@@ -177,18 +185,54 @@ const ProductDetail = () => {
         }
     };
 
+    function getUserIdFromToken(token) {
+        // Método simple: si usas una biblioteca como jwt-decode sería más robusto
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.userId;
+    }
+
     const handleSubmitReview = async () => {
         try {
             const token = localStorage.getItem('token');
-            const userId = 1; // Debes obtener este ID dinámicamente desde la autenticación
-            console.log("Rating:", userRating, "Comment:", userComment);
+            if (!token) {
+                alert("Debes iniciar sesión para dejar una reseña");
+                navigate('/login', {
+                    state: {
+                        message: 'Inicia sesión para dejar una reseña',
+                        fromReserve: id
+                    }
+                });
+                return;
+            }
 
+            const userId = getUserIdFromToken(token);
+
+            // Verificar si el usuario tiene una reserva completada para el producto
+            const hasReservationResponse = await fetch(`http://localhost:8080/api/reservations/user/${userId}/product/${id}/completed`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!hasReservationResponse.ok) {
+                throw new Error('Error al verificar reservas');
+            }
+
+            const hasReservation = await hasReservationResponse.json();
+            if (!hasReservation) {
+                alert("Debes tener una reserva completada para este producto antes de dejar una reseña.");
+                return;
+            }
+
+            // Construir el objeto de reseña
             const review = {
-                product: { id }, // Modificar para incluir product como objeto si el backend lo requiere
+                product: { id: parseInt(id) },
                 rating: userRating,
-                comment: userComment,
+                comment: userComment
             };
 
+            // Enviar la reseña
             const response = await fetch(`http://localhost:8080/api/reviews?userId=${userId}`, {
                 method: 'POST',
                 headers: {
@@ -198,31 +242,70 @@ const ProductDetail = () => {
                 body: JSON.stringify(review),
             });
 
-            if (!response.ok) throw new Error('Error al enviar la reseña');
+            if (!response.ok) {
+                const errorData = await response.text();
+                throw new Error(`Error al enviar la reseña: ${response.status} - ${errorData}`);
+            }
 
-            // Actualizar las reseñas y la puntuación media
-            fetchReviews();
-            fetchAverageRating();
-            fetchReviewCount();
+            // Limpiar el formulario y actualizar las reseñas
+            setUserRating(0);
+            setUserComment("");
+            await fetchReviews();
+            await fetchAverageRating();
+            await fetchReviewCount();
+
+            alert("Reseña enviada correctamente");
         } catch (err) {
-            console.error(err);
+            console.error("Error en handleSubmitReview:", err);
+            alert(err.message);
         }
     };
 
 
-    const handleReserveClick = () => {
+    const handleReserveClick = async () => {
         const token = localStorage.getItem('token');
+
         if (!token) {
-            // Redirigir al login con un mensaje y la ruta de origen
+            // Redirigir al login con mensaje y la ruta de origen
             navigate('/login', {
                 state: {
                     message: 'Para reservar, debes iniciar sesión o registrarte.',
-                    fromReserve: id, // Guardar el ID del producto para redirigir después del login
+                    fromReserve: id, // ID del producto para redirigir después del login
                 },
             });
-        } else {
-            // Redirigir a la página de reserva
-            navigate(`/reserve/${id}`);
+            return;
+        }
+
+        if (!selectedDate) {
+            alert('Por favor, selecciona una fecha para la reserva.');
+            return;
+        }
+
+        try {
+            // Asegurar que `selectedDate` sea un string en formato `YYYY-MM-DD`
+            const formattedDate = moment(selectedDate).format("YYYY-MM-DD");
+
+            // Hacer la solicitud POST para crear la reserva
+            const response = await fetch(`http://localhost:8080/api/reservations?productId=${id}&reservationDate=${formattedDate}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Error al crear la reserva');
+            }
+
+            const data = await response.json();
+            console.log('Reserva creada:', data);
+
+            // Mostrar mensaje de éxito
+            alert('Reserva creada con éxito');
+        } catch (err) {
+            console.error(err);
+            alert('Hubo un error al crear la reserva. Por favor, inténtalo de nuevo.');
         }
     };
 
@@ -243,6 +326,7 @@ const ProductDetail = () => {
             fetchReviews();
             fetchAverageRating();
             fetchReviewCount();
+            console.log("Product:", product);
         }
     }, [id]);
 
@@ -316,7 +400,7 @@ const ProductDetail = () => {
                 <div className="reviews-section">
                     <h2>Valoraciones</h2>
                     <div className="average-rating">
-                        ⭐ {averageRating.toFixed(1)} ({reviewCount} reseñas)
+                        ⭐ {(averageRating || 0).toFixed(1)} ({reviewCount} reseñas)
                     </div>
 
                     {/* Formulario para dejar una reseña */}
@@ -355,7 +439,7 @@ const ProductDetail = () => {
                                     </span>
                                 </div>
                                 <div className="review-rating">
-                                    ⭐ {product.averageRating.toFixed(1)} ({product.reviewCount} reseñas)
+                                    ⭐ {(review.rating || 0).toFixed(1)} (reseña)
                                 </div>
                                 <p className="review-comment">{review.comment}</p>
                             </div>
@@ -372,7 +456,10 @@ const ProductDetail = () => {
                 {/* Calendario de disponibilidad */}
                 <div className="availability-section">
                     <h2>Disponibilidad</h2>
-                    <AvailabilityCalendar occupiedDates={product.occupiedDates} />
+                    <AvailabilityCalendar
+                        occupiedDates={product.occupiedDates}
+                        onDateSelect={handleDateSelect}
+                    />
                 </div>
 
                 {/* Características */}
@@ -406,7 +493,7 @@ const ProductDetail = () => {
                     Reservar
                 </button>
 
-                {/* Resto de la información del producto... */}
+
             </div>
 
         </div>

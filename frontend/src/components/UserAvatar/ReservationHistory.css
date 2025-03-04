@@ -1,0 +1,53 @@
+.reservation-history {
+    padding: 20px;
+  }
+  
+  .back-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  
+  .back-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .reservations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .reservation-item {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .reservation-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  button {
+    margin: 5px;
+    padding: 8px;
+    cursor: pointer;
+  }
+  
+  .complete-button {
+    background-color: green;
+    color: white;
+  }
+  
+  .delete-button {
+    background-color: red;
+    color: white;
+  }
+  

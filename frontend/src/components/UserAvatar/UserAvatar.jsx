@@ -15,7 +15,7 @@ const UserAvatar = ({ name }) => {
     : "U"; // "U" de "Usuario"
 
   const handleClick = () => {
-    navigate("/favorites"); // Redirige a la página de favoritos
+    navigate("/user-dashboard"); // Redirige a la página de dashboard del usuario
   };
 
   return (

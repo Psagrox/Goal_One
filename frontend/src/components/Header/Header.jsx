@@ -25,7 +25,7 @@ export const Header = ({ user, setUser }) => {
           <UserAvatar name={user?.name || "Usuario"} />
           <span>{user?.name}</span>
 
-          {user.roles.includes('ADMIN') && (
+          {user?.role?.includes("ADMIN") && (
             <Link to="/admin" className="auth-button">Administrar</Link>
           )}
 

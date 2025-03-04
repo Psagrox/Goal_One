@@ -60,9 +60,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/products/**").permitAll() // Permitir acceso público a /api/products y sus subrutas
                         .requestMatchers("/api/products").permitAll()
                         .requestMatchers("/uploads/**").permitAll() // Permitir acceso público a las imágenes subidas
-                        .requestMatchers("/api/reviews/**").permitAll() // Permitir acceso público a los endpoints de reseñas
-                        .requestMatchers("/api/users/favorites/add").authenticated() // Permitir acceso autenticado a este endpoint
-                        .requestMatchers("/api/users/**", "/admin/**").hasAuthority("ADMIN") // Proteger endpoints de admin
+                        .requestMatchers("/api/reviews/**").authenticated()// Permitir acceso público a los endpoints de reseñas
+                        .requestMatchers("/api/users/favorites/**").hasAuthority("USER") // Permitir acceso autenticado a este endpoint
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN") // Proteger endpoints de admin
+                        .requestMatchers("/api/users/**").hasRole("USER")
                         .requestMatchers("/api/features").hasAuthority("ADMIN")
                         .requestMatchers("/api/products/suggestions").permitAll()
                         .anyRequest().authenticated() // Cualquier otra solicitud requiere autenticación

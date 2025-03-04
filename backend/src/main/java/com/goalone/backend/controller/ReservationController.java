@@ -5,6 +5,7 @@ import com.goalone.backend.model.Reservation;
 import com.goalone.backend.service.ReservationService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,9 +47,11 @@ public class ReservationController {
     // Marcar una reserva como completada
     @PutMapping("/{reservationId}/complete")
     public ResponseEntity<?> completeReservation(@PathVariable Long reservationId) {
+        System.out.println("Reserva marcada como completa con ID: " + reservationId); // Log
         reservationService.completeReservation(reservationId);
         return ResponseEntity.ok().build();
     }
+
 
     // Obtener todas las reservas de un usuario
     @GetMapping("/user/{userId}")
@@ -71,5 +74,15 @@ public class ReservationController {
             @PathVariable Long productId) {
         boolean hasCompleted = reservationService.hasUserCompletedReservation(userId, productId);
         return ResponseEntity.ok(hasCompleted);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteReservation(@PathVariable Long id) {
+        try {
+            reservationService.deleteReservation(id);
+            return ResponseEntity.ok("Reserva eliminada correctamente");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }

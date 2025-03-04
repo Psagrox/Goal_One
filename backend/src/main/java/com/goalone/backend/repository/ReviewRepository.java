@@ -17,4 +17,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // Contar el número de reseñas de un producto
     Long countByProductId(Long productId);
+
+    boolean existsByUserIdAndProductId(Long userId, Long productId);
 }

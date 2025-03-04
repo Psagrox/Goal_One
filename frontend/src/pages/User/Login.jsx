@@ -68,11 +68,12 @@ const Login = ({ setUser }) => {
       }
 
       const decodedToken = jwtDecode(token); // Decodifica el token
+      console.log(decodedToken);
       const user = {
         token,
         email: decodedToken.sub,
         name: decodedToken.name,
-        role: decodedToken.role,
+        role: decodedToken.roles || [],
       };
 
       localStorage.setItem("token", token); // Guardar el JWT en localStorage
@@ -88,6 +89,7 @@ const Login = ({ setUser }) => {
     } catch (err) {
       setServerError("Email o contraseña incorrectos. Intenta de nuevo.");
     }
+    
   };
 
   return (
