@@ -79,6 +79,12 @@ public class Product {
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "feature_id")
     )
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false) // Relación con el usuario (proveedor)
+    private User user; // El usuario que ofrece el producto
+
+
     private List<Feature> features = new ArrayList<>();
 
     public String getDescription() {
